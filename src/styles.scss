@@ -1,0 +1,201 @@
+/*
+ * I DONT CARE HOW STINKY IT IS TO PUT ALL YOUR SASS IN 1 FILE
+ * TAKE *YOUR* SASS SOMEWHERE ELSE 😡
+ */
+
+/* --- GLOBALS --- */
+:root {
+  --editor-font-size: 20px;
+  --editor-font: var(--editor-font-size) 'Ubuntu Mono', monospace;
+  --editor-text-padding: 5px 0;
+  --line-height: 26px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  padding: 0;
+  margin: 0;
+  background-color: #24292E;
+  font-family: 'Ubuntu Mono', monospace;
+}
+
+img.emoji {
+  height: 1em;
+  width: 1em;
+  margin: 0 .05em 0 .1em;
+  vertical-align: -0.1em;
+}
+
+.code {
+  color: rgba(238, 238, 238, 0.9);
+  font: var(--editor-font-size) 'Ubuntu Mono', monospace;
+  line-height: var(--line-height);
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  user-select: none;
+
+  .codeLine {
+    transition: all ease .2s;
+    &:hover { background-color: rgba(255, 255, 255, 0.05); }
+  }
+
+  i {
+    color: #DA9151;
+
+    &.ri {
+      color: #FF7B72;
+      font-style: italic;
+    }
+    &.c { color: #76BCF9; }
+    &.fn {
+      color: #8866C3;
+      font-style: italic;
+      font-weight: 900;
+      cursor: pointer;
+      transition: all ease .3s;
+
+      &:hover {
+        opacity: .7;
+      }
+    }
+  }
+}
+
+.inline-input {
+  background-color: transparent;
+  border: none;
+  width: 5ch;
+  color: white;
+  font: var(--editor-font-size) 'Ubuntu Mono', monospace;
+  border-bottom: 2px solid gray;
+  margin-left: 10px;
+  border-radius: 0;
+}
+
+/* --- Line Numbers --- */
+.line-numbers {
+  font-size: var(--editor-font-size);
+  color: rgba(255, 255, 255, 0.3);
+  border-right: 1px solid rgba(128, 128, 128, 0.2);
+  min-width: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  user-select: none;
+
+  .line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    height: var(--line-height);
+    width: 100%;
+    transition: all ease .3s;
+    &:hover { background-color: rgba(255, 255, 255, 0.1); }
+  }
+}
+
+.map-grid {
+  display: grid;
+  width: max-content;
+  margin-left: 9ch;
+  position: relative;
+  user-select: none;
+  cursor: normal;
+  
+  &:before {
+    content: 'emoji = [';
+    position: absolute;
+    top: 0;
+    left: -9ch;
+    color: white;
+    font-size: var(--editor-font-size);
+    height: var(--line-height);
+    display: inline-flex;
+    align-items: center;
+    width: 13ch;
+  }
+  &:after {
+    content: ']';
+    position: absolute;
+    bottom: 0;
+    left: 100%;
+    color: white;
+    font-size: var(--editor-font-size);
+    height: var(--line-height);
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+/* --- GRID --- */
+.grid {
+  display: grid;
+  width: 21ch;
+  height: auto;
+  margin-left: 6ch;
+  position: relative;
+  user-select: none;
+  cursor: default;
+  grid-template-columns: repeat(8, var(--line-height));
+  
+  &:before {
+    content: 'a: [';
+    position: absolute;
+    top: 0;
+    left: -4ch;
+    color: white;
+    font-size: var(--editor-font-size);
+    height: var(--line-height);
+    display: inline-flex;
+    align-items: center;
+    width: 13ch;
+  }
+  &:after {
+    content: ']';
+    position: absolute;
+    bottom: 0;
+    left: 100%;
+    color: white;
+    font-size: var(--editor-font-size);
+    height: var(--line-height);
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+/* --- CELLS --- */
+.cell {
+  width: var(--line-height);
+  height: var(--line-height);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--editor-font-size);
+  position: relative;
+  background-color: transparent;
+  transition: all ease .3s;
+  
+  &.accessible {
+    cursor: pointer;
+    border: 1px solid rgba(218, 165, 32, 0.3);
+    
+    &:hover { background-color: rgba(218, 165, 32, 0.15); }
+    &:active { background-color: rgba(218, 165, 32, 0.75); }
+  }
+
+  &:hover { background-color: rgba(255, 255, 255, 0.2); }
+  
+  &:not(:last-child):after {
+    content: ',';
+    position: absolute;
+    bottom: -3px;
+    right: -5px;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.3);
+  }
+}
