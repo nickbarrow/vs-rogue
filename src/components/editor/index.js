@@ -7,9 +7,9 @@ export default function Editor(props) {
 
   return (
     <div className="editor">
-      <LineNumbers count={30} />
+      {/* <LineNumbers count={30} /> */}
 
-      <div className='content'>
+      <div className='code'>
         {props.user && <PlayMap {...props} />}
         <EditMap {...props} />
       </div>

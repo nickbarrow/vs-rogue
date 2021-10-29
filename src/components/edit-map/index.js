@@ -75,8 +75,8 @@ export default function EditMap(props) {
   return (
     <div className="map-generator">
       {editingMap ? (
-        <pre className='code'>
-          <Ctrl val="let" />{`emoji, title = '${editingMap?.title}'`}
+        <>
+          <CL><Ctrl val="let" />{`emoji, title = '${editingMap?.title}'`}</CL>
           <CL>
             <AFN name='setW' f={() => {setEditingMap((old) => {
                 let clone = {...old}
@@ -110,43 +110,45 @@ export default function EditMap(props) {
             <Comment val="TODO: asve" />{'}'}
           </CL>
 
-          <div
-            className="map-grid"
-            style={{
-              gridTemplateColumns: `repeat(${editingMap.size.width}, var(--line-height))`,
-              gridTemplateRows: `repeat(${editingMap.size.height}, var(--line-height))`
-            }}>
-            {mapGrid()}
-          </div>
+          <CL>
+            <div
+              className="map-grid"
+              style={{
+                gridTemplateColumns: `repeat(${editingMap.size.width}, var(--line-height))`,
+                gridTemplateRows: `repeat(${editingMap.size.height}, var(--line-height))`
+              }}>
+              {mapGrid()}
+            </div>
+          </CL>
 
           <CL>
             <AFN name='exit' f={() => {setEditingMap(null)}}></AFN>
             {' clear() }'}
           </CL>
-          {/* <i>const</i> <i className='fn' onClick={() => { saveMap(editingMap) }}>save</i>{' = () => {\n'}
-          {'  firebase.set(mapDoc, '}<i className='ri'>this</i>{'});\n'}
-          {'}'} */}
-        </pre>
+          <CL></CL>
+        </>
       ) : (
-        <pre className="code">
+        // Edit Map
+        <>
+          <CL></CL>
           <CL><Comment val='Click function name to run.' /></CL>
           
           <CL>
-            <FN name='editMap' f={editMap}>
+            <AFN name='edit' f={editMap}>
               <Var name="map" />{'='}<input ref={mapInput} className='inline-input'></input>
-            </FN>
+            </AFN>
           </CL>
   
           <CL><Tb/><Var/>mapSnap = fb.getMap(map)</CL>
           
-          <CL><Tb/><Ctrl val='if'/>(mapSnap.data() !== <Const val='BAD'/>{')'}</CL>
+          <CL><Tb/><Ctrl val='if'/><span style={{ marginRight: '1ch'}}>{'(mapSnap.data() !== '}</span><Const val='BAD'/>{')'}</CL>
   
           <CL><Tb/><Tb/><Ctrl val='return'/>mapSnap.data()</CL>
   
-          <CL><Tb/>{'} '}<Ctrl val='else'/><Ctrl val='return'/>new Map()</CL>
+          <CL><Tb/><Ctrl val='else'/><Ctrl val='return'/>new Map()</CL>
           
           <CL>{'}'}</CL>
-        </pre>
+        </>
       )}
     </div>
   )

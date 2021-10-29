@@ -71,4 +71,4 @@ const generateCells = (map, clickHandler, isEditingGrid) => {
 
 const rollD = (sides) => { return Math.floor(Math.random() * sides) }
 
-module.exports = { generateCells, isAdjacent, moveTo, rollD }
+export { generateCells, isAdjacent, moveTo, rollD }

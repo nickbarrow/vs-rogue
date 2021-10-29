@@ -20,6 +20,10 @@ body {
   font-family: 'Ubuntu Mono', monospace;
 }
 
+.App {
+  padding-bottom: 26px;
+}
+
 img.emoji {
   height: 1em;
   width: 1em;
@@ -35,10 +39,29 @@ img.emoji {
   padding: 0;
   width: 100%;
   user-select: none;
+  counter-reset: line;
 
   .codeLine {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    min-height: var(--line-height);
+    margin: 0;
+    padding: 0;
+    font: var(--editor-font-size) 'Ubuntu Mono', monospace;
+    position: relative;
     transition: all ease .2s;
+    padding-left: 8ch;
+
     &:hover { background-color: rgba(255, 255, 255, 0.05); }
+
+    &:before {
+      counter-increment: line;
+      content: counter(line);
+      color: white;
+      position: absolute;
+      left: 3ch;
+    }
   }
 
   i {
@@ -61,6 +84,8 @@ img.emoji {
       }
     }
   }
+
+  .fn-def { display: inline; }
 }
 
 .inline-input {

@@ -42,4 +42,4 @@ const AFN = (props) => {
   )
 }
 
-module.exports = { CL, FN, Var, Const, Comment, Ctrl, Tb, AFN }
+export { CL, FN, Var, Const, Comment, Ctrl, Tb, AFN }

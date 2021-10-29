@@ -66,4 +66,4 @@ const setUserData = async (uid, data) => {
   console.log('💾 Progress saved.')
 }
 
-module.exports = { auth, firestore, loadMap, saveMap, getItems, getUserData, setUserData }
+export { auth, firestore, loadMap, saveMap, getItems, getUserData, setUserData }

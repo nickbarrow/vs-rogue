@@ -123,11 +123,12 @@ export default function PlayMap(props) {
   // }, [localUserData])
 
   return (
-    <div className='play'>
+    <>
       {localUserData?.mapStates[localUserData.currentMap] ? (
-        <Twemoji options={{ folder: 'svg', ext: '.svg'}}>
+        // <Twemoji options={{ folder: 'svg', ext: '.svg'}}>
+        // </Twemoji>
         <>
-          <pre className="code">
+          <CL>
             <div
               className="map-grid"
               style={{
@@ -136,40 +137,37 @@ export default function PlayMap(props) {
               }}>
               {generateCells(localUserData.mapStates[localUserData.currentMap], handleCellClick)}
             </div>
-          </pre>
-          <pre className='code'>
-            {showInventory ? (
-              <div className='inventory'>
-                <CL><AFN name='items' f={null}></AFN></CL>
-                <CL className='grid'>
-                  {localUserData?.inventory?.map((item, index) => {
-                    return <div
-                              className='cell'
-                              onClick={() => { handleInventoryItemClick(index) }}
-                              key={index}>
-                              {item}
-                            </div>})}
-                </CL>
-                <CL>{'}'}</CL>
-              </div>
-            ) : ''}
-            
-          </pre>
+          </CL>
+          {showInventory ? (
+            <div className='inventory'>
+              <CL><AFN name='items' f={null}></AFN></CL>
+              <CL className='grid'>
+                {localUserData?.inventory?.map((item, index) => {
+                  return <div
+                            className='cell'
+                            onClick={() => { handleInventoryItemClick(index) }}
+                            key={index}>
+                            {item}
+                          </div>})}
+              </CL>
+              <CL>{'}'}</CL>
+            </div>
+          ) : ''}
         </>
-        </Twemoji>
       ) : (
-        <pre className="code">
-          <CL><Comment val='Load from data or start new.' /></CL>
+        // Start game
+        <>
+          <CL><Comment val='Continue from data or start new.' /></CL>
           <CL>
-            <AFN name='run' f={start}></AFN>
+            <AFN name='start' f={start}></AFN>
           </CL>
           <CL><Tb/><Var/>data = loadData(user)</CL>
           <CL><Tb/><Ctrl val='if'/>{'(data) resume(save)'}</CL>
           <CL><Tb/><Ctrl val='else'/>start('new')</CL>
           <CL>{'}'}</CL>
           <CL></CL>
-        </pre>
+        </>
       )}
-    </div>
+    </>
   )
 }
