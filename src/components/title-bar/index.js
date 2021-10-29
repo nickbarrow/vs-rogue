@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { auth } from '../../utils/firebase'
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth"
+import { VscChromeMinimize, VscChromeRestore, VscChromeClose } from "react-icons/vsc"
 
 export default function TitleBar (props) {
     const provider = new GoogleAuthProvider()
@@ -36,9 +37,9 @@ export default function TitleBar (props) {
             
 
             <div className="right">
-                <div className='btn window-control'>{'🗕'}</div>
-                <div className='btn window-control'>{'🗗'}</div>
-                <div className='btn window-control'>{'🗙'}</div>
+                <div className='btn window-control'><VscChromeMinimize /></div>
+                <div className='btn window-control'><VscChromeRestore /></div>
+                <div className='btn window-control'><VscChromeClose /></div>
             </div>
         </div>
     )

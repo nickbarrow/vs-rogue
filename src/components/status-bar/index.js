@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getItems } from '../../utils/firebase'
 import Twemoji from 'react-twemoji'
-import './status-bar.scss'
 
 export default function StatusBar(props) {
   const [items, setItems] = useState(null)

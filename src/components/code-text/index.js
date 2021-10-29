@@ -1,5 +1,3 @@
-import './code-text.scss'
-
 const Comment = (props) => {
   return <pre className='comment'>{props.val}</pre>
 }

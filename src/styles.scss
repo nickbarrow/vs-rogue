@@ -3,25 +3,26 @@
  * TAKE *YOUR* SASS SOMEWHERE ELSE 😡
  */
 
+/* --- VARS --- */
 $fontSize: 20px;
-
-/* --- GLOBALS --- */
 :root {
-  --editor-font-size: 20px;
   --editor-font: $fontSize 'Ubuntu Mono', monospace;
   --editor-text-padding: 5px 0;
   --line-height: 26px;
 }
+@font-face {
+  font-family: 'Segoe UI', sans-serif;
+  src: url('utils/segoeui.ttf'); }
 
+
+/* --- GLOBALS --- */
 * { box-sizing: border-box; }
-
 body {
   padding: 0;
   margin: 0;
   background-color: #23272E;
   font-family: 'Ubuntu Mono', monospace;
 }
-
 .App { padding-bottom: 26px; }
 
 /* --- TITLE BAR --- */
@@ -48,7 +49,7 @@ body {
   }
   
   .btn {
-    font-family: sans-serif;
+    font-family: 'Segoe UI';
     height: 100%;
     display: inline-flex;
     align-items: center;
@@ -70,6 +71,32 @@ img.emoji {
   width: 1em;
   margin: 0 .05em 0 .1em;
   vertical-align: -0.1em;
+}
+
+/* --- EDITOR --- */
+.editor {
+  width: 100%;
+  height: 100%;
+  
+  .welcome {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .options {
+      width: 50%;
+      max-width: 350px;
+      display: flex;
+      flex-direction: column;
+
+      img {
+        width: 100%;
+        margin-top: 100px;
+      }
+    }
+  }
 }
 
 /* --- CODE TEXT ---*/
@@ -191,42 +218,18 @@ img.emoji {
   }
 
   .fn-def { display: inline; }
+  
+  .inline-input {
+    background-color: transparent;
+    border: none;
+    width: 5ch;
+    color: white;
+    font: $fontSize 'Ubuntu Mono', monospace;
+    border-bottom: 2px solid gray;
+    margin-left: 10px;
+    border-radius: 0;
+  }
 }
-
-.inline-input {
-  background-color: transparent;
-  border: none;
-  width: 5ch;
-  color: white;
-  font: $fontSize 'Ubuntu Mono', monospace;
-  border-bottom: 2px solid gray;
-  margin-left: 10px;
-  border-radius: 0;
-}
-
-/* --- Line Numbers --- */
-// .line-numbers {
-//   font-size: var(--editor-font-size);
-//   color: rgba(255, 255, 255, 0.3);
-//   border-right: 1px solid rgba(128, 128, 128, 0.2);
-//   min-width: 60px;
-//   display: flex;
-//   flex-direction: column;
-//   align-items: center;
-//   height: 100%;
-//   user-select: none;
-// 
-//   .line {
-//     display: flex;
-//     align-items: center;
-//     justify-content: center;
-//     margin: 0;
-//     height: var(--line-height);
-//     width: 100%;
-//     transition: all ease .3s;
-//     &:hover { background-color: rgba(255, 255, 255, 0.1); }
-//   }
-// }
 
 .map-grid {
   display: grid;
@@ -327,5 +330,72 @@ img.emoji {
     right: -5px;
     font-size: 16px;
     color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* --- STATUS BAR --- */
+.status-bar {
+  width: 100%;
+  height: 26px;
+  font-size: 12px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  border-top: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  color: white;
+  background-color: black;
+  user-select: none;
+
+  .sb-btn {
+    position: relative;
+    height: 100%;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+    &:hover { background-color: rgba(255, 255, 255, 0.2); }
+
+    .submenu {
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      background-color: black;
+      border: 1px solid white;
+      opacity: 0;
+      visibility: hidden;
+      transition: all ease .3s;
+
+      &.active {
+        visibility: visible;
+        opacity: 1;
+      }
+    }
+  }
+
+  .tools {
+
+    b { margin-right: 5px; }
+
+    .toolbox {
+      display: grid;
+      grid-template-columns: repeat(5, var(--line-height));
+
+      .tool {
+        font-size: $fontSize;
+        height: var(--line-height);
+        border: 1px solid black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all ease .2s;
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.2);
+        }
+      }
+    }
   }
 }
