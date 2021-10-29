@@ -1,6 +1,5 @@
 import { useContext, useRef, useState } from 'react'
-import { loadMap, saveMap } from '../../utils/firebase'
-import MapEditContext from '../../utils/MapEditContext'
+import { loadMap, saveMap, getUserData } from '../../utils/firebase'
 import { generateCells } from '../../utils/utils'
 import { CL, Comment, FN, Var, Ctrl, Const, Tb, AFN } from '../code-text'
 
@@ -10,27 +9,15 @@ export default function EditMap(props) {
         widthInput = useRef(null),
         heightInput = useRef(null),
         nameInput = useRef(null)
-  
-  var mapEditContext = useContext(MapEditContext)
 
-  // idk i think its funny
-  var Meth = {
-    random: function (digits) {
-      let s = ''
-      for (let i = 0; i < digits; i++)
-        s += Math.floor(Math.random()*10)
-      return s
-    }
-  }
+  // Returns a random integer in range range as a string. idk i think its funny
+  var Meth = { random: range => { return `${Math.floor(Math.random()*range)}` } }
 
   const editMap = async () => {
     let inputVal = mapInput.current.value
-    if (inputVal) {
-      // if (inputVal === 'current' && props.user)
-      //   setEditingMap()
-      setEditingMap(await loadMap(inputVal))
-    } else setEditingMap({
-      title: 'map' + Meth.random(4),
+    if (inputVal) setEditingMap(await loadMap(inputVal))
+    else setEditingMap({
+      title: 'map' + Meth.random(100),
       size: {
         width: 5,
         height: 5
@@ -130,7 +117,6 @@ export default function EditMap(props) {
       ) : (
         // Edit Map
         <>
-          <CL></CL>
           <CL><Comment val='Click function name to run.' /></CL>
           
           <CL>

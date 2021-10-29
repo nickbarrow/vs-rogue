@@ -124,10 +124,12 @@ export default function PlayMap(props) {
 
   return (
     <>
+      <CL><Comment val="Click a function name to run." /></CL>
       {localUserData?.mapStates[localUserData.currentMap] ? (
         // <Twemoji options={{ folder: 'svg', ext: '.svg'}}>
         // </Twemoji>
         <>
+        <CL>{`var title = '${localUserData.currentMap}', emoji`}</CL>
           <CL>
             <div
               className="map-grid"
@@ -138,6 +140,7 @@ export default function PlayMap(props) {
               {generateCells(localUserData.mapStates[localUserData.currentMap], handleCellClick)}
             </div>
           </CL>
+          <CL></CL>
           {showInventory ? (
             <div className='inventory'>
               <CL><AFN name='items' f={null}></AFN></CL>
@@ -151,6 +154,7 @@ export default function PlayMap(props) {
                           </div>})}
               </CL>
               <CL>{'}'}</CL>
+              <CL></CL>
             </div>
           ) : ''}
         </>

@@ -21,7 +21,7 @@ const CL = (props) => {
 }
 
 const Tb = () => {
-  return <div style={{width: '2ch'}}></div>
+  return <div className='tb'></div>
 }
 
 const FN = (props) => {

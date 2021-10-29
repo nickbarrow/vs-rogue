@@ -3,10 +3,12 @@
  * TAKE *YOUR* SASS SOMEWHERE ELSE 😡
  */
 
+$fontSize: 20px;
+
 /* --- GLOBALS --- */
 :root {
   --editor-font-size: 20px;
-  --editor-font: var(--editor-font-size) 'Ubuntu Mono', monospace;
+  --editor-font: $fontSize 'Ubuntu Mono', monospace;
   --editor-text-padding: 5px 0;
   --line-height: 26px;
 }
@@ -16,12 +18,51 @@
 body {
   padding: 0;
   margin: 0;
-  background-color: #24292E;
+  background-color: #23272E;
   font-family: 'Ubuntu Mono', monospace;
 }
 
-.App {
-  padding-bottom: 26px;
+.App { padding-bottom: 26px; }
+
+/* --- TITLE BAR --- */
+.title-bar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #1B1F23;
+  height: 35px;
+  font-size: 16px;
+  color: #99A1B0;
+
+  .left, .right {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .logo {
+    max-height: 60%;
+    padding: 0 10px;
+  }
+  
+  .btn {
+    font-family: sans-serif;
+    height: 100%;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    &:hover { background-color: #393D43; }
+
+    &.window-control {
+      padding: 0 18px;
+    }
+  }
+
+  .right .btn:last-child:hover { color: white; background-color: rgb(255, 46, 46); }
 }
 
 img.emoji {
@@ -31,9 +72,10 @@ img.emoji {
   vertical-align: -0.1em;
 }
 
+/* --- CODE TEXT ---*/
 .code {
   color: rgba(238, 238, 238, 0.9);
-  font: var(--editor-font-size) 'Ubuntu Mono', monospace;
+  font: $fontSize 'Ubuntu Mono', monospace;
   line-height: var(--line-height);
   margin: 0;
   padding: 0;
@@ -48,7 +90,7 @@ img.emoji {
     min-height: var(--line-height);
     margin: 0;
     padding: 0;
-    font: var(--editor-font-size) 'Ubuntu Mono', monospace;
+    font: $fontSize 'Ubuntu Mono', monospace;
     position: relative;
     transition: all ease .2s;
     padding-left: 8ch;
@@ -58,11 +100,74 @@ img.emoji {
     &:before {
       counter-increment: line;
       content: counter(line);
-      color: white;
+      color: #495162;
       position: absolute;
       left: 3ch;
+      top: 2px;
     }
   }
+  
+  pre {
+    margin: 0;
+    padding: 0;
+    display: inline;
+    font: $fontSize 'Ubuntu Mono', monospace;
+  }
+
+  .tb {
+    width: 2ch;
+    height: var(--line-height);
+    border-left: 2px solid #3B4048;
+  }
+  
+  .comment {
+    color: #4a5361;
+    font-style: italic;
+    &:before { content: '// '; }
+  }
+  
+  .const {
+    color: rgb(78, 166, 255);
+    font-weight: bold;
+    margin: 0;
+  }
+  
+  .var {
+    color: #FD7A71;
+    font-style: italic;
+    margin-right: 1ch;
+  }
+  
+  .strg {
+    color: #FFB45E;
+    font-style: italic;
+  }
+  
+  .ctrl {
+    color: #FFBE5E;
+    font-style: italic;
+    margin-right: 1ch;
+  }
+  .fn {
+    color: #B392F0;
+    // font-weight: 900;
+    font-style: italic;
+    cursor: pointer;
+    background-color: transparent;
+    padding: 2px 5px;
+    border-radius: 4px;
+    margin: 0 0 0 -0.5ch;
+    transition: all ease .3s;
+  
+    &:hover {
+      color: white;
+      background-color: rgba(143, 90, 236, 0.75);
+    }
+    &:active {
+      opacity: 0.7;
+    }
+  }
+  
 
   i {
     color: #DA9151;
@@ -93,35 +198,35 @@ img.emoji {
   border: none;
   width: 5ch;
   color: white;
-  font: var(--editor-font-size) 'Ubuntu Mono', monospace;
+  font: $fontSize 'Ubuntu Mono', monospace;
   border-bottom: 2px solid gray;
   margin-left: 10px;
   border-radius: 0;
 }
 
 /* --- Line Numbers --- */
-.line-numbers {
-  font-size: var(--editor-font-size);
-  color: rgba(255, 255, 255, 0.3);
-  border-right: 1px solid rgba(128, 128, 128, 0.2);
-  min-width: 60px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100%;
-  user-select: none;
-
-  .line {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-    height: var(--line-height);
-    width: 100%;
-    transition: all ease .3s;
-    &:hover { background-color: rgba(255, 255, 255, 0.1); }
-  }
-}
+// .line-numbers {
+//   font-size: var(--editor-font-size);
+//   color: rgba(255, 255, 255, 0.3);
+//   border-right: 1px solid rgba(128, 128, 128, 0.2);
+//   min-width: 60px;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   height: 100%;
+//   user-select: none;
+// 
+//   .line {
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     margin: 0;
+//     height: var(--line-height);
+//     width: 100%;
+//     transition: all ease .3s;
+//     &:hover { background-color: rgba(255, 255, 255, 0.1); }
+//   }
+// }
 
 .map-grid {
   display: grid;
@@ -137,7 +242,7 @@ img.emoji {
     top: 0;
     left: -9ch;
     color: white;
-    font-size: var(--editor-font-size);
+    font-size: $fontSize;
     height: var(--line-height);
     display: inline-flex;
     align-items: center;
@@ -149,7 +254,7 @@ img.emoji {
     bottom: 0;
     left: 100%;
     color: white;
-    font-size: var(--editor-font-size);
+    font-size: $fontSize;
     height: var(--line-height);
     display: inline-flex;
     align-items: center;
@@ -173,7 +278,7 @@ img.emoji {
     top: 0;
     left: -4ch;
     color: white;
-    font-size: var(--editor-font-size);
+    font-size: $fontSize;
     height: var(--line-height);
     display: inline-flex;
     align-items: center;
@@ -185,7 +290,7 @@ img.emoji {
     bottom: 0;
     left: 100%;
     color: white;
-    font-size: var(--editor-font-size);
+    font-size: $fontSize;
     height: var(--line-height);
     display: inline-flex;
     align-items: center;
@@ -200,7 +305,7 @@ img.emoji {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--editor-font-size);
+  font-size: $fontSize;
   position: relative;
   background-color: transparent;
   transition: all ease .3s;
