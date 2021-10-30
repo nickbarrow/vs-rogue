@@ -63,7 +63,6 @@ const getUserData = async (uid) => {
  */
 const setUserData = async (uid, data) => {
   await setDoc(doc(firestore, 'userData', uid), data)
-  console.log('💾 Progress saved.')
 }
 
 export { auth, firestore, loadMap, saveMap, getItems, getUserData, setUserData }

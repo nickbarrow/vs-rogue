@@ -69,6 +69,21 @@ const generateCells = (map, clickHandler, isEditingGrid) => {
   return g
 }
 
-const rollD = (sides) => { return Math.floor(Math.random() * sides) }
+/**
+ * Rolls a <sides> sided die and returns the value. Optionally takes a check parameter.
+ * If check param is passed, it will log result and return if roll passed or not.
+ * @param {*} sides 
+ * @param {*} check - Min value required to pass a skill check.
+ * @param {*} index - Index of roll, if sequential rolls.
+ * @returns 
+ */
+const rollD = (sides, check, index) => {
+  let roll = Math.floor(Math.random() * sides)
+  if (check) {
+    if (index !== undefined) console.log(`🎲[${index}]: ${roll} | Req: ${check} ${roll >= check ? '✔️' : '❌'}`)
+    else console.log(`🎲: ${roll} | Req: ${check} ${roll >= check ? '✔️' : '❌'}`)
+    return roll >= check
+  } else return roll
+}
 
 export { generateCells, isAdjacent, moveTo, rollD }

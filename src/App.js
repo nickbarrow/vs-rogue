@@ -4,6 +4,7 @@ import StatusBar from './components/status-bar'
 import { getItems } from './utils/firebase'
 import './styles.scss'
 import TitleBar from './components/title-bar'
+import Tabs from './components/tabs'
 
 export default function App() {
   const [user, setUser] = useState(null)
@@ -27,6 +28,7 @@ export default function App() {
   return (
     <div className='App'>
       <TitleBar user={user} setUser={setUser} />
+      <Tabs />
       
       <Editor
         user={user}

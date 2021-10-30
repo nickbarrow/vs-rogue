@@ -69,6 +69,10 @@ export default function PlayMap(props) {
         toggleInventory(!showInventory)
         break
 
+      case '🚪':
+        console.log(mapClone.teleportNodes[i])
+        break
+
       default:
         let clickedItem = props.itemData.find(item => item.icon === mapClone.tiles[i])
         if (!clickedItem?.action) { console.log('Item undefined'); return false }
@@ -84,10 +88,8 @@ export default function PlayMap(props) {
           case 'harvest':
             if (!clickedItem.harvestItems) return false
             let changed = false
-            clickedItem.harvestItems.forEach(harvestItem => {
-              let roll = rollD(100), check = harvestItem.harvestCheck
-              console.log(`${roll >= check ? '✔️' : '❌'} Harvest roll: ${roll} | Req: ${check}`)
-              if (roll >= check) {
+            clickedItem.harvestItems.forEach((harvestItem, index) => {
+              if (rollD(100, harvestItem.harvestCheck, index)) {
                 tmpUD.inventory.push(harvestItem.item)
                 if (!changed) changed = true
               }
@@ -143,7 +145,8 @@ export default function PlayMap(props) {
           <CL></CL>
           {showInventory ? (
             <div className='inventory'>
-              <CL><AFN name='items' f={null}></AFN></CL>
+              <CL><Const />{' items = ['}</CL>
+              <CL className='inventory'>
                 {localUserData?.inventory?.map((item, index) => {
                   return <div
                             className='cell'

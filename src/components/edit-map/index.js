@@ -7,8 +7,7 @@ export default function EditMap(props) {
   const [editingMap, setEditingMap] = useState(null)
   const mapInput = useRef(null),
         widthInput = useRef(null),
-        heightInput = useRef(null),
-        nameInput = useRef(null)
+        heightInput = useRef(null)
 
   // Returns a random integer in range range as a string. idk i think its funny
   var Meth = { random: range => { return `${Math.floor(Math.random()*range)}` } }
@@ -22,6 +21,7 @@ export default function EditMap(props) {
         width: 5,
         height: 5
       },
+      teleportNodes: {},
       tiles: new Array(25)
     })
   }
@@ -35,11 +35,7 @@ export default function EditMap(props) {
         let dest = prompt("Enter destination map:")
         if (!dest) return false
         else {
-          let tpNodes = mapClone.teleportNodes || []
-          // let alreadyTpHere = 
-          // tpNodes.push({
-
-          // })
+          mapClone.teleportNodes[i] = dest
         }
         break
       case '❌':
@@ -66,13 +62,13 @@ export default function EditMap(props) {
           <CL><Ctrl val="let" />{`emoji, title = '${editingMap?.title}'`}</CL>
           <CL>
             <AFN name='setW' f={() => {setEditingMap((old) => {
-                let clone = {...old}
-                clone.size.width = widthInput.current.value
-                return clone
-              })}}>
-              <Var name="w" />{'='}<input ref={widthInput} className='inline-input' placeholder='5'></input>
+              let clone = {...old}
+              clone.size.width = widthInput.current.value
+              return clone
+            })}}>
+              <Var name="w" />{'='}<input ref={widthInput} className='inline-input' placeholder={editingMap.size.width}></input>
             </AFN>
-            <Comment val="TODO: heighth" />{'}'}
+            <Comment val="TODO: with" />{'}'}
           </CL>
           <CL>
             <AFN name='setH' f={() => {setEditingMap((old) => {
@@ -80,9 +76,9 @@ export default function EditMap(props) {
               clone.size.height = heightInput.current.value
               return clone
             })}}>
-              <Var name="h" />{'='}<input ref={heightInput} className='inline-input' placeholder='5'></input>
+              <Var name="h" />{'='}<input ref={heightInput} className='inline-input' placeholder={editingMap.size.height}></input>
             </AFN>
-            <Comment val="TODO: widh" />{'}'}
+            <Comment val="TODO: hite" />{'}'}
           </CL>
           <CL>
             <AFN name='save' f={() => {saveMap(editingMap)}}>
@@ -120,9 +116,9 @@ export default function EditMap(props) {
           <CL><Comment val='Click function name to run.' /></CL>
           
           <CL>
-            <AFN name='edit' f={editMap}>
-              <Var name="map" />{'='}<input ref={mapInput} className='inline-input'></input>
-            </AFN>
+            <FN name='edit' f={editMap}>
+              <Var name="map" />{'='}<input ref={mapInput} className='inline-input' placeholder="name" />
+            </FN>
           </CL>
   
           <CL><Tb/><Var/>mapSnap = fb.getMap(map)</CL>

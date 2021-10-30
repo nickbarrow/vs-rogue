@@ -5,6 +5,8 @@
 
 /* --- VARS --- */
 $fontSize: 20px;
+$bg: rgb(35, 39, 46);
+
 :root {
   --editor-font: $fontSize 'Ubuntu Mono', monospace;
   --editor-text-padding: 5px 0;
@@ -14,13 +16,17 @@ $fontSize: 20px;
   font-family: 'Segoe UI', sans-serif;
   src: url('utils/segoeui.ttf'); }
 
-
+@keyframes no {
+  25%, 50%, 75% { transform: translate3d(-2px, 0, 0); }
+  40%, 60% { transform: translate3d(2px, 0, 0); }
+}
+       
 /* --- GLOBALS --- */
 * { box-sizing: border-box; }
 body {
   padding: 0;
   margin: 0;
-  background-color: #23272E;
+  background-color: $bg;
   font-family: 'Ubuntu Mono', monospace;
 }
 .App { padding-bottom: 26px; }
@@ -31,7 +37,6 @@ body {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #1B1F23;
   height: 35px;
   font-size: 16px;
   color: #99A1B0;
@@ -64,6 +69,56 @@ body {
   }
 
   .right .btn:last-child:hover { color: white; background-color: rgb(255, 46, 46); }
+}
+
+/* --- TABS --- */
+.tabs {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 45px;
+  background-color: rgb(30, 34, 39);
+
+  .tab {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+    padding: 0 15px;
+    color: rgb(215, 192, 132);
+    border-right: 1px solid rgb(24, 26, 31);
+    cursor: pointer;
+    font-family: 'Segoe UI';
+    font-size: 16px;
+
+    &.active { 
+      background-color: $bg;
+      .close { visibility: visible; color: rgb(220, 220, 220); }
+    }
+    
+    &:hover {
+      background-color: rgb(50, 56, 66);
+      .close { visibility: visible; }
+    }
+
+    span { margin: 10px; }
+    
+    .close {
+      visibility: hidden;
+      display: inline-flex;
+      border-radius: 5px;
+      color: rgb(141, 142, 134);
+      padding: 4px;
+      
+      &:hover {
+        background-color: rgb(63, 68, 75);
+        animation: no .65s ease forwards;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        perspective: 1000px;
+      }
+    }
+  }
 }
 
 img.emoji {
@@ -341,12 +396,11 @@ img.emoji {
   position: fixed;
   bottom: 0;
   left: 0;
-  border-top: 1px solid #eee;
   display: flex;
   align-items: center;
   padding: 0 20px;
-  color: white;
-  background-color: black;
+  color: #959DAC;
+  background-color: #1E2227;
   user-select: none;
 
   .sb-btn {
