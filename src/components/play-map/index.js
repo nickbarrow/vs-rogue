@@ -144,7 +144,6 @@ export default function PlayMap(props) {
           {showInventory ? (
             <div className='inventory'>
               <CL><AFN name='items' f={null}></AFN></CL>
-              <CL className='grid'>
                 {localUserData?.inventory?.map((item, index) => {
                   return <div
                             className='cell'
@@ -153,8 +152,7 @@ export default function PlayMap(props) {
                             {item}
                           </div>})}
               </CL>
-              <CL>{'}'}</CL>
-              <CL></CL>
+              <CL>{']'}</CL>
             </div>
           ) : ''}
         </>
