@@ -18,6 +18,7 @@ export default function PlayMap(props) {
       // Create & set new user data if none found.
       console.log('No user data. Creating new save...')
       ud = {
+        icon: '🧍‍♀️',
         xp: 0,
         inventory: [],
         currentMap: 'test',
@@ -50,7 +51,8 @@ export default function PlayMap(props) {
 
   const handleCellClick = (i) => {
     let mapClone = {...localUserData.mapStates[localUserData.currentMap]},
-        pl = mapClone.tiles.indexOf('🧍‍♂️'),
+        pi = localUserData.icon,
+        pl = mapClone.tiles.indexOf(pi),
         tmpUD = {...localUserData}
 
     if (!pl) return false
@@ -62,10 +64,10 @@ export default function PlayMap(props) {
     
     switch (mapClone.tiles[i]) {
       case '':
-        mapClone = moveTo(i, mapClone)
+        mapClone = moveTo(i, mapClone, pl, pi)
         break;
 
-      case '🧍‍♂️':
+      case pi:
         toggleInventory(!showInventory)
         break
 
@@ -74,6 +76,8 @@ export default function PlayMap(props) {
         break
 
       default:
+        console.log('not movable tile')
+        
         let clickedItem = props.itemData.find(item => item.icon === mapClone.tiles[i])
         if (!clickedItem?.action) { console.log('Item undefined'); return false }
         // else console.log(clickedItem.action)
@@ -139,7 +143,7 @@ export default function PlayMap(props) {
                 gridTemplateColumns: `repeat(${localUserData.mapStates[localUserData.currentMap].size.width}, var(--line-height))`,
                 gridTemplateRows: `repeat(${localUserData.mapStates[localUserData.currentMap].size.height}, var(--line-height))`
               }}>
-              {generateCells(localUserData.mapStates[localUserData.currentMap], handleCellClick)}
+              {generateCells(localUserData.icon, localUserData.mapStates[localUserData.currentMap], handleCellClick)}
             </div>
           </CL>
           <CL></CL>

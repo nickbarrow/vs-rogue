@@ -31,11 +31,11 @@ const isAdjacent = (i, pl, w) => {
  * @param {*} i - Index of cell to move to.
  * @param {*} m - Map to update.
  */
-const moveTo = (i, m) => {
+const moveTo = (i, m, pl, pi) => {
   if (!m.tiles) return null
   let mapClone = {...m}
-  mapClone.tiles.splice(mapClone.tiles.indexOf('🧍‍♂️'), 1, '')
-  mapClone.tiles.splice(i, 1, '🧍‍♂️')
+  mapClone.tiles[pl] = ''
+  mapClone.tiles[i] = pi
   return mapClone
 }
 
@@ -45,8 +45,8 @@ const moveTo = (i, m) => {
  * @param {*} clickHandler - Cell click handler function.
  * @param {*} isEditingGrid - Pass true to disable adjacent highlights.
  */
-const generateCells = (map, clickHandler, isEditingGrid) => {
-  let pl = map.tiles.indexOf('🧍‍♂️'),
+const generateCells = (pi, map, clickHandler, isEditingGrid) => {
+  let pl = map.tiles.indexOf(pi) >= 0 ? map.tiles.indexOf(pi) : map.tiles.indexOf('📍'),
       g = [],
       w = parseInt(map.size.width, 10),
       h = parseInt(map.size.height, 10)
@@ -61,7 +61,7 @@ const generateCells = (map, clickHandler, isEditingGrid) => {
           className={`cell ${imAdjacent ? 'accessible' : ''}`}
           onClick={() => { clickHandler(index) }}
           key={index}>
-          {map.tiles[index]}
+          {index === pl ? pi : map.tiles[index]}
         </div>
       )
     }
