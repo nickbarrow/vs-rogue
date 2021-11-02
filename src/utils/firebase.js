@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app"
 import { getFirestore, doc, setDoc, getDoc, getDocs, collection } from 'firebase/firestore'
 import { getAuth } from "firebase/auth";
+import Item from '../models/Item'
 
 const firebaseConfig = {
   apiKey: "AIzaSyAOYfLpH4NWjjC1WiOTsFlIWnCgvlDrRbc",
@@ -20,16 +21,27 @@ const loadMap = async (mapName) => {
   const mapSnap = await getDoc(doc(firestore, 'maps', mapName))
   if (mapSnap.exists()) {
     // Successfully loaded map.
-    return {...mapSnap.data(), title: mapSnap.id};
+    return {...mapSnap.data(), title: mapSnap.id}
   } else return null
+}
+
+const normalizeMap = map => {
+  let m = {...map}
+  for (let i = 0; i < m.tiles.length; i++) {
+    if (!m.tiles[i] instanceof Item) m.tiles[i] = new Item()
+    m.tiles[i] = JSON.parse(JSON.stringify(m.tiles[i]))
+  }
+  return m
 }
 
 // Save a map to firestore.
 const saveMap = async (map) => {
-  for (let i = 0; i < map.tiles.length; i++)
-    if (typeof map.tiles[i] !== 'string') map.tiles[i] = ''
-
-  await setDoc(doc(firestore, 'maps', map.title), map)
+  // for (let i = 0; i < map.tiles.length; i++) {
+  //   // if (typeof map.tiles[i] !== 'string') map.tiles[i] = ''
+  //   if (!map.tiles[i] instanceof Item) map.tiles[i] = new Item()
+  //   map.tiles[i] = JSON.parse(JSON.stringify(map.tiles[i]))
+  // }
+  await setDoc(doc(firestore, 'maps', map.title), normalizeMap(map))
 }
 
 const getItems = async (item) => {
@@ -62,6 +74,7 @@ const getUserData = async (uid) => {
  * @param {*} data - Data to save for user.
  */
 const setUserData = async (uid, data) => {
+  if (data.mapStates[data.currentMap]) data.mapStates[data.currentMap] = normalizeMap(data.mapStates[data.currentMap])
   await setDoc(doc(firestore, 'userData', uid), data)
 }
 

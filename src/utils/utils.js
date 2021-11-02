@@ -1,3 +1,5 @@
+import Item from "../models/Item"
+
 /**
  * Determines if a tile is within 2 squares of player location.
  * @param {*} i - Index of tile to test.
@@ -34,8 +36,8 @@ const isAdjacent = (i, pl, w) => {
 const moveTo = (i, m, pl, pi) => {
   if (!m.tiles) return null
   let mapClone = {...m}
-  mapClone.tiles[pl] = ''
-  mapClone.tiles[i] = pi
+  mapClone.tiles[pl] = new Item()
+  mapClone.tiles[i] = new Item({ title: 'Player', icon: pi, action: 'inventory' });
   return mapClone
 }
 
@@ -46,7 +48,7 @@ const moveTo = (i, m, pl, pi) => {
  * @param {*} isEditingGrid - Pass true to disable adjacent highlights.
  */
 const generateCells = (pi, map, clickHandler, isEditingGrid) => {
-  let pl = isEditingGrid ? null : (map.tiles.indexOf(pi) >= 0 ? map.tiles.indexOf(pi) : map.tiles.indexOf('📍')),
+  let pl = isEditingGrid ? null : map.tiles.findIndex(e => e.icon === pi || e.icon === '📍'),
       g = [],
       w = parseInt(map.size.width, 10),
       h = parseInt(map.size.height, 10)
@@ -61,7 +63,7 @@ const generateCells = (pi, map, clickHandler, isEditingGrid) => {
           className={`cell ${imAdjacent ? 'accessible' : ''}`}
           onClick={() => { clickHandler(index) }}
           key={index}>
-          {!isEditingGrid && index === pl ? pi : map.tiles[index]}
+          {!isEditingGrid && index === pl ? pi : map.tiles[index].icon}
         </div>
       )
     }

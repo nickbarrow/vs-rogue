@@ -7,14 +7,17 @@
 $fontSize: 20px;
 $bg: rgb(35, 39, 46);
 
+@font-face {
+  font-family: 'Segoe UI', sans-serif;
+  src: url('fonts/segoeui.ttf'); }
+@font-face {
+  font-family: 'JetBrains', monospace;
+  src: url('fonts/jetbrains.ttf'); }
+
 :root {
-  --editor-font: $fontSize 'Ubuntu Mono', monospace;
   --editor-text-padding: 5px 0;
   --line-height: 26px;
 }
-@font-face {
-  font-family: 'Segoe UI', sans-serif;
-  src: url('utils/segoeui.ttf'); }
 
 @keyframes no {
   25%, 50%, 75% { transform: translate3d(-2px, 0, 0); }
@@ -157,7 +160,7 @@ img.emoji {
 /* --- CODE TEXT ---*/
 .code {
   color: rgba(238, 238, 238, 0.9);
-  font: $fontSize 'Ubuntu Mono', monospace;
+  font: $fontSize 'JetBrains', monospace;
   line-height: var(--line-height);
   margin: 0;
   padding: 0;
@@ -172,7 +175,7 @@ img.emoji {
     min-height: var(--line-height);
     margin: 0;
     padding: 0;
-    font: $fontSize 'Ubuntu Mono', monospace;
+    font: inherit;
     position: relative;
     transition: all ease .2s;
     padding-left: 8ch;
@@ -193,7 +196,7 @@ img.emoji {
     margin: 0;
     padding: 0;
     display: inline;
-    font: $fontSize 'Ubuntu Mono', monospace;
+    font: inherit;
   }
 
   .tb {

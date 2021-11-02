@@ -54,7 +54,7 @@ export default function PlayMap(props) {
   const handleCellClick = (i) => {
     let mapClone = {...localUserData.mapStates[localUserData.currentMap]},
         pi = localUserData.icon,
-        pl = mapClone.tiles.indexOf(pi),
+        pl = mapClone.tiles.findIndex(e => e.icon === pi || e.icon === '📍'),
         tmpUD = {...localUserData}
 
     // Validate action regardless of tile.
@@ -62,49 +62,71 @@ export default function PlayMap(props) {
       console.log("That's too far!")
       return false }
     
-    switch (mapClone.tiles[i]) {
-      case '':
+    let cItem = {...mapClone.tiles[i]}
+    switch (mapClone.tiles[i].action) {
+      case null:
+        // Available to move
         mapClone = moveTo(i, mapClone, pl, pi)
         break;
 
-      case pi:
+      case 'inventory':
         toggleInventory(!showInventory)
         break
-
-      case '🚪':
-        console.log(mapClone.teleportNodes[i])
-        break
-
-      default:
-        console.log('Not movable tile!')
-        console.log(typeof mapClone.tiles[i], mapClone.tiles[i])
         
-        let clickedItem = props.itemData.find(item => item.icon === mapClone.tiles[i])
-        if (!clickedItem?.action) { console.log('Item undefined'); return false }
-        // else console.log(clickedItem.action)
-        
-        switch (clickedItem.action) {
-          case 'collect':
-            // add item to localUserData inventory
-            tmpUD.inventory.push(mapClone.tiles[i])
-            console.log(tmpUD.inventory)
-            // mapClone.tiles.splice(i, 1, '')
-            break;
-          case 'harvest':
-            if (!clickedItem.harvestItems) return false
-            let changed = false
-            clickedItem.harvestItems.forEach((harvestItem, index) => {
-              if (rollD(100, harvestItem.harvestCheck, index)) {
-                tmpUD.inventory.push(harvestItem.item)
-                if (!changed) changed = true
-              }
-            })
-            if (changed) console.log(tmpUD.inventory)
-            break;
-          default:
-            break;
-        }
+      case 'harvest':
+        if (!cItem.harvestItems) return false
+        let changed = false
+        cItem.harvestItems.forEach((harvestItem, index) => {
+          if (rollD(100, harvestItem.harvestCheck, index)) {
+            tmpUD.inventory.push(props.itemData.find(item => item.icon === harvestItem.item))
+            if (!changed) changed = true
+          }
+        })
+        if (changed) console.log(tmpUD.inventory)
         break;
+
+      // case '':
+      //   mapClone = moveTo(i, mapClone, pl, pi)
+      //   break;
+
+      // case pi:
+      //   toggleInventory(!showInventory)
+      //   break
+
+      // case '🚪':
+      //   console.log(mapClone.teleportNodes[i])
+      //   break
+
+      // default:
+      //   console.log('Not movable tile!')
+      //   console.log(typeof mapClone.tiles[i], mapClone.tiles[i])
+        
+      //   let clickedItem = props.itemData.find(item => item.icon === mapClone.tiles[i])
+      //   if (!clickedItem?.action) { console.log('Item undefined'); return false }
+      //   // else console.log(clickedItem.action)
+        
+      //   switch (clickedItem.action) {
+      //     case 'collect':
+      //       // add item to localUserData inventory
+      //       tmpUD.inventory.push(mapClone.tiles[i])
+      //       console.log(tmpUD.inventory)
+      //       // mapClone.tiles.splice(i, 1, '')
+      //       break;
+      //     case 'harvest':
+      //       if (!clickedItem.harvestItems) return false
+      //       let changed = false
+      //       clickedItem.harvestItems.forEach((harvestItem, index) => {
+      //         if (rollD(100, harvestItem.harvestCheck, index)) {
+      //           tmpUD.inventory.push(harvestItem.item)
+      //           if (!changed) changed = true
+      //         }
+      //       })
+      //       if (changed) console.log(tmpUD.inventory)
+      //       break;
+      //     default:
+      //       break;
+      //   }
+      //   break;
     }
     
     // Update user mapstate regardless of action
@@ -157,7 +179,7 @@ export default function PlayMap(props) {
                             className='cell'
                             onClick={() => { handleInventoryItemClick(index) }}
                             key={index}>
-                            {item}
+                            {item.icon}
                           </div>})}
               </CL>
               <CL>{']'}</CL>

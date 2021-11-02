@@ -1,7 +1,8 @@
-import { useContext, useRef, useState } from 'react'
-import { loadMap, saveMap, getUserData } from '../../utils/firebase'
+import { useRef, useState } from 'react'
+import { loadMap, saveMap } from '../../utils/firebase'
 import { generateCells } from '../../utils/utils'
 import { CL, Comment, FN, Var, Ctrl, Const, Tb, AFN } from '../code-text'
+import Item from '../../models/Item'
 
 export default function EditMap(props) {
   const [editingMap, setEditingMap] = useState(null)
@@ -22,13 +23,16 @@ export default function EditMap(props) {
         height: 5
       },
       teleportNodes: {},
-      tiles: new Array(25)
+      tiles: new Array(25).fill(new Item())
     })
   }
 
   var handleCellClick = (i) => {
     let mapClone = { ...editingMap },
-        newVal = props.tool
+        newVal = new Item(),
+        toolItem = props.itemData.find(item => item.icon === props.tool)
+
+    console.log(toolItem)
 
     switch (props.tool) {
       case '🚪':
@@ -39,9 +43,8 @@ export default function EditMap(props) {
         }
         break
       case '❌':
-        newVal = ''
+      default:
         break
-      default: break
     }
 
     mapClone.tiles[i] = newVal
@@ -55,27 +58,68 @@ export default function EditMap(props) {
     }
   }
 
+  const updateMap = (newSize) => {
+    console.log('new size: ', newSize)
+    let mapClone = {...editingMap},
+        tiles = [...editingMap.tiles],
+        oldW = editingMap.size.width,
+        oldH = editingMap.size.height,
+        newW = newSize.width,
+        newH = newSize.height,
+        index,
+        newTiles = []
+
+    if (newW !== oldW) {
+      // Fewer cols
+      if (newW < oldW) {
+        for (let i = 0; i < oldH; i++) {
+          for (let j = 0; j < oldW; j++) {
+            index = i * oldW + j
+            if (j === 0) newTiles.push(tiles.slice(index, index + (newW)))
+          }
+        }
+      } else {
+        // More cols
+        for (let i = 0; i < oldH; i++) {
+          let r = []
+          for (let j = 0; j < newW; j++) {
+            let oldIndex = i * oldW + j
+            j > oldW-1 ? r.push(new Item()) : r.push(tiles[oldIndex])
+          }
+          newTiles.push(r)
+        }
+      }
+    } else if (newH !== oldH) {
+      // Fewer rows
+      if (newH < oldH) newTiles = tiles.slice(0, newH * oldW)
+      // More rows
+      else if (newH > oldH) {
+        newTiles = tiles
+        for (let i = tiles.length; i < newW * newH; i++) newTiles.push(new Item())
+      }
+    } else return // No change so don't update.
+
+    mapClone.size = {
+      width: newW,
+      height: newH
+    }
+    mapClone.tiles = newTiles.flat(1)
+    setEditingMap(mapClone)
+  }
+
   return (
     <div className="map-generator">
       {editingMap ? (
         <>
           <CL><Ctrl val="let" />{`emoji, title = '${editingMap?.title}'`}</CL>
           <CL>
-            <AFN name='setW' f={() => {setEditingMap((old) => {
-              let clone = {...old}
-              clone.size.width = widthInput.current.value
-              return clone
-            })}}>
+            <AFN name='setW' f={() => { updateMap({ width: parseInt(widthInput.current.value), height: editingMap.size.height })}}>
               <Var name="w" />{'='}<input ref={widthInput} className='inline-input' placeholder={editingMap.size.width}></input>
             </AFN>
             <Comment val="TODO: with" />{'}'}
           </CL>
           <CL>
-            <AFN name='setH' f={() => {setEditingMap((old) => {
-              let clone = {...old}
-              clone.size.height = heightInput.current.value
-              return clone
-            })}}>
+            <AFN name='setH' f={() => { updateMap({ width: editingMap.size.width, height: parseInt(heightInput.current.value) })}}>
               <Var name="h" />{'='}<input ref={heightInput} className='inline-input' placeholder={editingMap.size.height}></input>
             </AFN>
             <Comment val="TODO: hite" />{'}'}
