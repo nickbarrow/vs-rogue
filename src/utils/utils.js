@@ -46,7 +46,7 @@ const moveTo = (i, m, pl, pi) => {
  * @param {*} isEditingGrid - Pass true to disable adjacent highlights.
  */
 const generateCells = (pi, map, clickHandler, isEditingGrid) => {
-  let pl = map.tiles.indexOf(pi) >= 0 ? map.tiles.indexOf(pi) : map.tiles.indexOf('📍'),
+  let pl = isEditingGrid ? null : (map.tiles.indexOf(pi) >= 0 ? map.tiles.indexOf(pi) : map.tiles.indexOf('📍')),
       g = [],
       w = parseInt(map.size.width, 10),
       h = parseInt(map.size.height, 10)
@@ -61,7 +61,7 @@ const generateCells = (pi, map, clickHandler, isEditingGrid) => {
           className={`cell ${imAdjacent ? 'accessible' : ''}`}
           onClick={() => { clickHandler(index) }}
           key={index}>
-          {index === pl ? pi : map.tiles[index]}
+          {!isEditingGrid && index === pl ? pi : map.tiles[index]}
         </div>
       )
     }

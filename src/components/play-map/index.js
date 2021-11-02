@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { loadMap, getUserData, setUserData } from '../../utils/firebase'
 import { CL, Comment, AFN, FN, Var, Ctrl, Const, Tb } from '../code-text'
 import { generateCells, isAdjacent, moveTo, rollD } from '../../utils/utils'
@@ -17,13 +17,15 @@ export default function PlayMap(props) {
     else {
       // Create & set new user data if none found.
       console.log('No user data. Creating new save...')
+      let newMap = await loadMap('test'), icon = '🧍‍♀️'
+      newMap.tiles.splice(newMap.tiles.indexOf('📍'), 1, icon)
       ud = {
-        icon: '🧍‍♀️',
+        icon,
         xp: 0,
         inventory: [],
         currentMap: 'test',
         mapStates: {
-          'test': await loadMap('test')
+          'test': newMap
         }
       }
       await setUserData(props.user.uid, ud)
@@ -55,8 +57,6 @@ export default function PlayMap(props) {
         pl = mapClone.tiles.indexOf(pi),
         tmpUD = {...localUserData}
 
-    if (!pl) return false
-
     // Validate action regardless of tile.
     if (!isAdjacent(i, pl, mapClone.size.width)) {
       console.log("That's too far!")
@@ -76,7 +76,8 @@ export default function PlayMap(props) {
         break
 
       default:
-        console.log('not movable tile')
+        console.log('Not movable tile!')
+        console.log(typeof mapClone.tiles[i], mapClone.tiles[i])
         
         let clickedItem = props.itemData.find(item => item.icon === mapClone.tiles[i])
         if (!clickedItem?.action) { console.log('Item undefined'); return false }

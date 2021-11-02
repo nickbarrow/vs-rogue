@@ -51,7 +51,7 @@ export default function EditMap(props) {
   const mapGrid = () => {
     let map = editingMap
     if (map?.size?.width && map?.size?.height && map?.tiles) {
-      return generateCells(map, handleCellClick, true)
+      return generateCells(null, map, handleCellClick, true)
     }
   }
 
