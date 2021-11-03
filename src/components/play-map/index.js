@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { loadMap, setUserData } from '../../utils/firebase'
+import { getMap, setUserData } from '../../utils/firebase'
 import { CL, Comment, AFN, FN, Var, Ctrl, Const, Tb } from '../code-text'
 import { generateCells, isAdjacent, moveTo, rollD } from '../../utils/utils'
 
@@ -12,6 +12,15 @@ export default function PlayMap(props) {
   // Update shorthand version of localUserData.
   useEffect(() => { setUd(props.localUserData) }, [props.localUserData])
   
+  const loadMap = (mapName) => {
+    console.log(mapName)
+    if (ud.mapStates[mapName]) {
+      console.log('we already got it bud')
+    } else {
+      console.log('we gotta load er bud')
+    }
+  }
+  
   // Init game using user data or begin from test map.
   const start = async () => {
     // let ud = props.localUserData
@@ -20,16 +29,15 @@ export default function PlayMap(props) {
     else {
       // Create & set new user data if none found.
       console.log('No user data. Creating new save...')
-      let newMap = await loadMap('test'), icon = '🧍‍♀️'
-      newMap.tiles.splice(newMap.tiles.indexOf('📍'), 1, icon)
+      // Utilize moveTo function to replace starting pin with player icon.
+      let newMap = await getMap('map001')
+      newMap = await moveTo(newMap.tiles.findIndex(tile => tile.icon === '📍'), newMap, null, '🧍‍♀️')
       let newUd = {
-        icon,
+        icon: '🧍‍♀️',
         xp: 0,
         inventory: [],
-        currentMap: 'test',
-        mapStates: {
-          'test': newMap
-        }
+        currentMap: 'map001',
+        mapStates: { 'map001': newMap }
       }
       await setUserData(props.user.uid, newUd)
       // Update local user data
@@ -55,7 +63,7 @@ export default function PlayMap(props) {
     }
   }
 
-  const handleCellClick = (i) => {
+  const handleCellClick = async (i) => {
     let mapClone = {...ud.mapStates[ud.currentMap]},
         pi = ud.icon,
         pl = mapClone.tiles.findIndex(e => e.icon === pi || e.icon === '📍'),
@@ -67,6 +75,7 @@ export default function PlayMap(props) {
       return false }
     
     let cItem = {...mapClone.tiles[i]}
+    // console.log(cItem)
     switch (mapClone.tiles[i].action) {
       case null:
         // Available to move
@@ -89,48 +98,12 @@ export default function PlayMap(props) {
         if (changed) console.log(tmpUD.inventory)
         break;
 
-      // case '':
-      //   mapClone = moveTo(i, mapClone, pl, pi)
-      //   break;
-
-      // case pi:
-      //   toggleInventory(!showInventory)
-      //   break
-
-      // case '🚪':
-      //   console.log(mapClone.teleportNodes[i])
-      //   break
-
-      // default:
-      //   console.log('Not movable tile!')
-      //   console.log(typeof mapClone.tiles[i], mapClone.tiles[i])
+      case 'teleport':
+        await loadMap(cItem.teleportTo)
+        return
+        break
         
-      //   let clickedItem = props.itemData.find(item => item.icon === mapClone.tiles[i])
-      //   if (!clickedItem?.action) { console.log('Item undefined'); return false }
-      //   // else console.log(clickedItem.action)
-        
-      //   switch (clickedItem.action) {
-      //     case 'collect':
-      //       // add item to localUserData inventory
-      //       tmpUD.inventory.push(mapClone.tiles[i])
-      //       console.log(tmpUD.inventory)
-      //       // mapClone.tiles.splice(i, 1, '')
-      //       break;
-      //     case 'harvest':
-      //       if (!clickedItem.harvestItems) return false
-      //       let changed = false
-      //       clickedItem.harvestItems.forEach((harvestItem, index) => {
-      //         if (rollD(100, harvestItem.harvestCheck, index)) {
-      //           tmpUD.inventory.push(harvestItem.item)
-      //           if (!changed) changed = true
-      //         }
-      //       })
-      //       if (changed) console.log(tmpUD.inventory)
-      //       break;
-      //     default:
-      //       break;
-      //   }
-      //   break;
+      default: break
     }
     
     // Update user mapstate regardless of action
@@ -157,7 +130,6 @@ export default function PlayMap(props) {
 
   return (
     <>
-      <CL><Comment val="Click a function name to run." /></CL>
       {showMap ? (
         <>
         <CL>{`var title = '${ud.currentMap}', emoji`}</CL>
@@ -191,7 +163,7 @@ export default function PlayMap(props) {
       ) : (
         // Start game
         <>
-          <CL><Comment val='Continue from data or start new.' /></CL>
+          <CL><Comment val='// Continue from data or start new.' /></CL>
           <CL>
             <AFN name='start' f={start}></AFN>
           </CL>

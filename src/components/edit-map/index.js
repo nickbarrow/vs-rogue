@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { loadMap, saveMap } from '../../utils/firebase'
+import { getMap, saveMap } from '../../utils/firebase'
 import { generateCells } from '../../utils/utils'
 import { CL, Comment, FN, Var, Ctrl, Const, Tb, AFN } from '../code-text'
 import Item from '../../models/Item'
@@ -15,7 +15,7 @@ export default function EditMap(props) {
 
   const editMap = async () => {
     let inputVal = mapInput.current.value
-    if (inputVal) setEditingMap(await loadMap(inputVal))
+    if (inputVal) setEditingMap(await getMap(inputVal))
     else setEditingMap({
       title: 'map' + Meth.random(100),
       size: {
@@ -28,25 +28,33 @@ export default function EditMap(props) {
   }
 
   var handleCellClick = (i) => {
-    let mapClone = { ...editingMap },
-        newVal = new Item(),
-        toolItem = props.itemData.find(item => item.icon === props.tool)
-
-    console.log(toolItem)
-
-    switch (props.tool) {
-      case '🚪':
-        let dest = prompt("Enter destination map:")
-        if (!dest) return false
-        else {
-          mapClone.teleportNodes[i] = dest
-        }
-        break
-      case '❌':
-      default:
-        break
-    }
-
+    let mapClone = { ...editingMap }, newVal
+      
+    if (props.tool) {
+      let toolItem = props.itemData.find(item => item.icon === props.tool)
+      switch (toolItem.icon) {
+        case '🚪':
+          let dest = prompt("Enter destination map:")
+          if (!dest) return false
+          else newVal = new Item({...toolItem, ...{ teleportTo: dest }})
+          break
+        case '🚩':
+          let origin = prompt("Enter origin map:")
+          if (!origin) return false
+          else newVal = new Item({...toolItem, ...{ origin: origin }})
+          break
+        case '❔':
+          console.log(mapClone.tiles[i])
+          return
+          break
+        case '❌':
+          newVal = new Item()
+          break
+        default:
+          newVal = new Item(toolItem)
+          break
+      }
+    } else newVal = new Item()
     mapClone.tiles[i] = newVal
     setEditingMap(mapClone)
   }
@@ -59,7 +67,6 @@ export default function EditMap(props) {
   }
 
   const updateMap = (newSize) => {
-    console.log('new size: ', newSize)
     let mapClone = {...editingMap},
         tiles = [...editingMap.tiles],
         oldW = editingMap.size.width,

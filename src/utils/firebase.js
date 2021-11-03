@@ -17,7 +17,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const firestore = getFirestore(app);
 
-const loadMap = async (mapName) => {
+const getMap = async (mapName) => {
   const mapSnap = await getDoc(doc(firestore, 'maps', mapName))
   if (mapSnap.exists()) {
     // Successfully loaded map.
@@ -78,4 +78,4 @@ const setUserData = async (uid, data) => {
   await setDoc(doc(firestore, 'userData', uid), data)
 }
 
-export { auth, firestore, loadMap, saveMap, getItems, getUserData, setUserData }
+export { auth, firestore, getMap, saveMap, getItems, getUserData, setUserData }

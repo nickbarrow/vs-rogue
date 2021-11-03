@@ -36,7 +36,7 @@ const isAdjacent = (i, pl, w) => {
 const moveTo = (i, m, pl, pi) => {
   if (!m.tiles) return null
   let mapClone = {...m}
-  mapClone.tiles[pl] = new Item()
+  if (pl !== null && pl >= 0 && pl <= m.tiles.length-1) mapClone.tiles[pl] = new Item()
   mapClone.tiles[i] = new Item({ title: 'Player', icon: pi, action: 'inventory' });
   return mapClone
 }
@@ -63,7 +63,11 @@ const generateCells = (pi, map, clickHandler, isEditingGrid) => {
           className={`cell ${imAdjacent ? 'accessible' : ''}`}
           onClick={() => { clickHandler(index) }}
           key={index}>
-          {!isEditingGrid && index === pl ? pi : map.tiles[index].icon}
+          {isEditingGrid ? map.tiles[index].icon
+            : index === pl ? pi 
+              : map.tiles[index].icon === '🚩' ? ''
+                : map.tiles[index].icon
+          }
         </div>
       )
     }
