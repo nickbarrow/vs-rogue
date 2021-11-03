@@ -1,17 +1,20 @@
-import { useState } from 'react'
-import { loadMap, getUserData, setUserData } from '../../utils/firebase'
+import { useEffect, useState } from 'react'
+import { loadMap, setUserData } from '../../utils/firebase'
 import { CL, Comment, AFN, FN, Var, Ctrl, Const, Tb } from '../code-text'
 import { generateCells, isAdjacent, moveTo, rollD } from '../../utils/utils'
-import Twemoji from 'react-twemoji'
 
 export default function PlayMap(props) {
   // Manage user data locally so we only have to fetch on load, set whenever needed.
-  const [localUserData, setLocalUserData] = useState(null)
+  const [showMap, toggleMap] = useState(false)
   const [showInventory, toggleInventory] = useState(false)
+  const [ud, setUd] = useState(null)
+
+  // Update shorthand version of localUserData.
+  useEffect(() => { setUd(props.localUserData) }, [props.localUserData])
   
   // Init game using user data or begin from test map.
   const start = async () => {
-    let ud = await getUserData(props.user.uid)
+    // let ud = props.localUserData
     if (ud?.mapStates[ud.currentMap])
       console.log('Loading from user progress...')
     else {
@@ -19,7 +22,7 @@ export default function PlayMap(props) {
       console.log('No user data. Creating new save...')
       let newMap = await loadMap('test'), icon = '🧍‍♀️'
       newMap.tiles.splice(newMap.tiles.indexOf('📍'), 1, icon)
-      ud = {
+      let newUd = {
         icon,
         xp: 0,
         inventory: [],
@@ -28,14 +31,15 @@ export default function PlayMap(props) {
           'test': newMap
         }
       }
-      await setUserData(props.user.uid, ud)
+      await setUserData(props.user.uid, newUd)
+      // Update local user data
+      props.setLocalUserData(newUd)
     }
-    // Update local user data
-    setLocalUserData(ud)
+    toggleMap(true)
   }
 
   const handleInventoryItemClick = (i) => {
-    let clickedItem = props.itemData.find(item => item.icon === localUserData.inventory[i])
+    let clickedItem = props.itemData.find(item => item.icon === ud.inventory[i])
 
     if (!clickedItem?.action) { console.log('Item undefined'); return false }
     
@@ -52,10 +56,10 @@ export default function PlayMap(props) {
   }
 
   const handleCellClick = (i) => {
-    let mapClone = {...localUserData.mapStates[localUserData.currentMap]},
-        pi = localUserData.icon,
+    let mapClone = {...ud.mapStates[ud.currentMap]},
+        pi = ud.icon,
         pl = mapClone.tiles.findIndex(e => e.icon === pi || e.icon === '📍'),
-        tmpUD = {...localUserData}
+        tmpUD = {...ud}
 
     // Validate action regardless of tile.
     if (!isAdjacent(i, pl, mapClone.size.width)) {
@@ -130,9 +134,9 @@ export default function PlayMap(props) {
     }
     
     // Update user mapstate regardless of action
-    tmpUD.mapStates[localUserData.currentMap] = mapClone
+    tmpUD.mapStates[ud.currentMap] = mapClone
     setUserData(props.user.uid, tmpUD)
-    setLocalUserData(tmpUD)
+    props.setLocalUserData(tmpUD)
   }
 
   // Autosave hook.
@@ -154,19 +158,17 @@ export default function PlayMap(props) {
   return (
     <>
       <CL><Comment val="Click a function name to run." /></CL>
-      {localUserData?.mapStates[localUserData.currentMap] ? (
-        // <Twemoji options={{ folder: 'svg', ext: '.svg'}}>
-        // </Twemoji>
+      {showMap ? (
         <>
-        <CL>{`var title = '${localUserData.currentMap}', emoji`}</CL>
+        <CL>{`var title = '${ud.currentMap}', emoji`}</CL>
           <CL>
             <div
               className="map-grid"
               style={{
-                gridTemplateColumns: `repeat(${localUserData.mapStates[localUserData.currentMap].size.width}, var(--line-height))`,
-                gridTemplateRows: `repeat(${localUserData.mapStates[localUserData.currentMap].size.height}, var(--line-height))`
+                gridTemplateColumns: `repeat(${ud.mapStates[ud.currentMap].size.width}, var(--line-height))`,
+                gridTemplateRows: `repeat(${ud.mapStates[ud.currentMap].size.height}, var(--line-height))`
               }}>
-              {generateCells(localUserData.icon, localUserData.mapStates[localUserData.currentMap], handleCellClick)}
+              {generateCells(ud.icon, ud.mapStates[ud.currentMap], handleCellClick)}
             </div>
           </CL>
           <CL></CL>
@@ -174,7 +176,7 @@ export default function PlayMap(props) {
             <div className='inventory'>
               <CL><Const />{' items = ['}</CL>
               <CL className='inventory'>
-                {localUserData?.inventory?.map((item, index) => {
+                {ud?.inventory?.map((item, index) => {
                   return <div
                             className='cell'
                             onClick={() => { handleInventoryItemClick(index) }}

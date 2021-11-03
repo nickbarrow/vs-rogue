@@ -5,6 +5,7 @@ import Twemoji from 'react-twemoji'
 export default function StatusBar(props) {
   const [items, setItems] = useState(null)
   const [showTools, toggleTools] = useState(false)
+  const [showInventory, toggleInventory] = useState(false)
   
   useEffect(() => {
     const loadItems = async () => {
@@ -31,6 +32,14 @@ export default function StatusBar(props) {
             <div className='toolbox'>{items}</div>
           </div>
         </Twemoji>
+      </div>
+      
+      <div className='sb-btn tools' onClick={() => { toggleInventory(!showInventory) }}>
+        <span><b>Inventory</b></span>
+
+        <div className={`submenu ${showInventory ? 'active' : ''}`}>
+          <div className='toolbox'>{items}</div>
+        </div>
       </div>
     </div>
   )

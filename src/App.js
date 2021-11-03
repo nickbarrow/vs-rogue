@@ -1,29 +1,31 @@
 import { useEffect, useState } from 'react'
 import Editor from './components/editor'
 import StatusBar from './components/status-bar'
-import { getItems } from './utils/firebase'
+import { getItems, getUserData } from './utils/firebase'
 import './styles.scss'
 import TitleBar from './components/title-bar'
 import Tabs from './components/tabs'
 
 export default function App() {
   const [user, setUser] = useState(null)
-  // Need better editing state management
-  const [tool, setTool] = useState(null)
   const [itemData, setItemData] = useState(null)
-  
-  useEffect(() => {
-    // onAuthStateChanged(auth, (newUser) => {
-    //   if (newUser) setUser(newUser)
-    //   else setUser(null)
-    // });
+  const [localUserData, setLocalUserData] = useState(null)
+  const [tool, setTool] = useState(null)
 
+  useEffect(() => {
     // Load item data
-    async function loadItems() {
+    (async function() {
       setItemData(await getItems())
-    }
-    loadItems()
+    })()
   }, [])
+
+  // Load user data into local state when user logs in.
+  useEffect(() => {
+    (async function () {
+      if (user && !localUserData)
+        setLocalUserData(await getUserData(user.uid))
+    })()
+  }, [user])
   
   return (
     <div className='App'>
@@ -33,6 +35,8 @@ export default function App() {
       <Editor
         user={user}
         itemData={itemData}
+        localUserData={localUserData}
+        setLocalUserData={setLocalUserData}
         tool={tool}
         />
 
