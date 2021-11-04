@@ -32,22 +32,22 @@ export default function EditMap(props) {
       
     if (props.tool) {
       let toolItem = props.itemData.find(item => item.icon === props.tool)
-      switch (toolItem.icon) {
-        case '🚪':
+      switch (toolItem.action) {
+        case 'teleport':
           let dest = prompt("Enter destination map:")
           if (!dest) return false
           else newVal = new Item({...toolItem, ...{ teleportTo: dest }})
           break
-        case '🚩':
+        case 'arrive':
           let origin = prompt("Enter origin map:")
           if (!origin) return false
           else newVal = new Item({...toolItem, ...{ origin: origin }})
           break
-        case '❔':
+        case 'info':
           console.log(mapClone.tiles[i])
           return
           break
-        case '❌':
+        case 'clear':
           newVal = new Item()
           break
         default:

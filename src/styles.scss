@@ -5,6 +5,7 @@
 
 /* --- VARS --- */
 $fontSize: 18px;
+$fontFamily: 'Ubuntu Mono';
 $lineHeight: 26px;
 $bg: rgb(35, 39, 46);
 
@@ -198,7 +199,7 @@ img.emoji {
     margin: 0;
     padding: 0;
     display: inline;
-    font-family: inherit;
+    font-family: $fontFamily;
   }
 
   .tb {
@@ -295,17 +296,17 @@ img.emoji {
 .map-grid {
   display: grid;
   width: max-content;
-  margin-left: 9ch;
+  margin-left: 7ch;
   position: relative;
   user-select: none;
   grid-gap: 5px;
   
   &:before {
-    content: 'emoji = [';
+    content: 'arr = [';
     position: absolute;
     top: 0;
-    left: -9ch;
-    color: white;
+    left: -7ch;
+    color: rgba(238, 238, 238, 0.9);
     font-size: $fontSize;
     height: $lineHeight;
     display: inline-flex;

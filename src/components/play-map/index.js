@@ -12,19 +12,26 @@ export default function PlayMap(props) {
   // Update shorthand version of localUserData.
   useEffect(() => { setUd(props.localUserData) }, [props.localUserData])
   
-  const loadMap = (mapName) => {
-    console.log(mapName)
+  const loadMap = async (mapName) => {
+    let tmpUD = {...ud}
+
     if (ud.mapStates[mapName]) {
-      console.log('we already got it bud')
+      console.log(`📌 Entering ${mapName}.`)
     } else {
-      console.log('we gotta load er bud')
+      console.log('🗺️ Entering new area...')
+      let loadingMap = await getMap(mapName)
+      loadingMap = await moveTo(loadingMap.tiles.findIndex(tile => tile.icon === '🚩'), loadingMap, null, ud.icon)
+      tmpUD.mapStates[mapName] = {...loadingMap}
     }
+    tmpUD.currentMap = mapName
+    await setUserData(props.user.uid, tmpUD)
+    props.setLocalUserData(tmpUD)
   }
   
   // Init game using user data or begin from test map.
   const start = async () => {
     // let ud = props.localUserData
-    if (ud?.mapStates[ud.currentMap])
+    if (ud?.mapStates && ud.mapStates[ud.currentMap])
       console.log('Loading from user progress...')
     else {
       // Create & set new user data if none found.
@@ -132,7 +139,7 @@ export default function PlayMap(props) {
     <>
       {showMap ? (
         <>
-        <CL>{`var title = '${ud.currentMap}', emoji`}</CL>
+        <CL>{`var title = '${ud.currentMap}', arr`}</CL>
           <CL>
             <div
               className="map-grid"
@@ -143,7 +150,6 @@ export default function PlayMap(props) {
               {generateCells(ud.icon, ud.mapStates[ud.currentMap], handleCellClick)}
             </div>
           </CL>
-          <CL></CL>
           {showInventory ? (
             <div className='inventory'>
               <CL><Const />{' items = ['}</CL>
@@ -159,6 +165,11 @@ export default function PlayMap(props) {
               <CL>{']'}</CL>
             </div>
           ) : ''}
+          <CL><Comment val='// Reset user data.' /></CL>
+          <CL>
+            <AFN name='reset' f={async () => { await setUserData(props.user.uid, {}) }}></AFN>{'}'}
+          </CL>
+          <CL></CL>
         </>
       ) : (
         // Start game

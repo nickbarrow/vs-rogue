@@ -63,8 +63,12 @@ const generateCells = (pi, map, clickHandler, isEditingGrid) => {
           className={`cell ${imAdjacent ? 'accessible' : ''}`}
           onClick={() => { clickHandler(index) }}
           key={index}>
-          {isEditingGrid ? map.tiles[index].icon
+          {
+            // If editing, just draw icon
+            isEditingGrid ? map.tiles[index].icon
+            // If playing and player location, draw player icon
             : index === pl ? pi 
+            
               : map.tiles[index].icon === '🚩' ? ''
                 : map.tiles[index].icon
           }

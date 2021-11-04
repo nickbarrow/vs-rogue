@@ -74,7 +74,7 @@ const getUserData = async (uid) => {
  * @param {*} data - Data to save for user.
  */
 const setUserData = async (uid, data) => {
-  if (data.mapStates[data.currentMap]) data.mapStates[data.currentMap] = normalizeMap(data.mapStates[data.currentMap])
+  if (data.mapStates && data.mapStates[data.currentMap]) data.mapStates[data.currentMap] = normalizeMap(data.mapStates[data.currentMap])
   await setDoc(doc(firestore, 'userData', uid), data)
 }
 
