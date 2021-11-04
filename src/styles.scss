@@ -8,6 +8,10 @@ $fontSize: 18px;
 $fontFamily: 'Ubuntu Mono';
 $lineHeight: 26px;
 $bg: rgb(35, 39, 46);
+$titleBarHeight: 35px;
+$tabBarHeight: 45px;
+$statusBarHeight: 26px;
+$consoleHeight: 150px;
 
 @font-face {
   font-family: 'Segoe UI', sans-serif;
@@ -33,10 +37,20 @@ body {
   margin: 0;
   background-color: $bg;
   font-size: $fontSize;
-  // font-family: monospace;
   font-family: 'Ubuntu Mono';
 }
-.App { padding-bottom: 26px; }
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track { background-color: transparent; }
+::-webkit-scrollbar-thumb {
+  background-color: #3E4552;
+  // border-radius: 50px;
+}
+.App {
+  height: calc(100vh - #{$consoleHeight + $statusBarHeight});
+}
 
 /* --- TITLE BAR --- */
 .title-bar {
@@ -138,7 +152,9 @@ img.emoji {
 /* --- EDITOR --- */
 .editor {
   width: 100%;
-  height: 100%;
+  height: calc(100vh - #{$titleBarHeight + $tabBarHeight + $consoleHeight + $statusBarHeight});
+  overflow-y: auto;
+  padding-bottom: $lineHeight;
   
   .welcome {
     width: 100%;
@@ -383,6 +399,12 @@ img.emoji {
     &:active { background-color: rgba(218, 165, 32, 0.75); }
   }
 
+  &.harvesting-disabled span {
+    cursor: default;
+    filter: grayscale(75%);
+    opacity: .8;
+  }
+
   &:hover { background-color: rgba(255, 255, 255, 0.2); }
   
   // &:not(:last-child):after {
@@ -395,12 +417,68 @@ img.emoji {
   // }
 }
 
+/* --- CONSOLE --- */
+.console {
+  color: #8B919C;
+  // position: absolute;
+  bottom: $statusBarHeight;
+  left: 0;
+  width: 100%;
+  height: $consoleHeight;
+  padding: 0 20px;
+  border-top: 1px solid #44464B;
+  display: flex;
+  flex-direction: column;
+  background-color: #23272E;
+
+  .console-toolbar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 5px;
+
+    .console-tab {
+      font-family: 'Segoe UI';
+      font-size: 10px;
+      text-transform: uppercase;
+      color: #999B9D;
+      padding: 8px 5px;
+      margin-right: 10px;
+      cursor: pointer;
+      
+      &:first-child {
+        color: white;
+        border-bottom: 1px solid white;
+      }
+      &:hover { color: white; }
+    }
+  }
+
+  .logs {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-start;
+    overflow-y: auto;
+
+    .log {
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      color: #ABB2BF;
+      font-size: 14px;
+      font-family: 'Ubuntu Mono';
+      white-space: break-spaces;
+    }
+  }
+}
+
 /* --- STATUS BAR --- */
 .status-bar {
   width: 100%;
-  height: 26px;
+  height: $statusBarHeight;
   font-size: 12px;
-  position: fixed;
+  // position: fixed;
   bottom: 0;
   left: 0;
   display: flex;

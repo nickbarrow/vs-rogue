@@ -60,18 +60,20 @@ const generateCells = (pi, map, clickHandler, isEditingGrid) => {
 
       g.push(
         <div
-          className={`cell ${imAdjacent ? 'accessible' : ''}`}
+          className={`cell ${imAdjacent ? 'accessible' : ''} ${map.tiles[index].harvestingDisabled === true ? 'harvesting-disabled' : ''}`}
           onClick={() => { clickHandler(index) }}
           key={index}>
-          {
-            // If editing, just draw icon
-            isEditingGrid ? map.tiles[index].icon
-            // If playing and player location, draw player icon
-            : index === pl ? pi 
-            
-              : map.tiles[index].icon === '🚩' ? ''
-                : map.tiles[index].icon
-          }
+            <span>
+              {
+                // If editing, just draw icon
+                isEditingGrid ? map.tiles[index].icon
+                // If playing and player location, draw player icon
+                : index === pl ? pi 
+                
+                  : map.tiles[index].icon === '🚩' ? ''
+                    : map.tiles[index].icon
+              }
+            </span>
         </div>
       )
     }
@@ -90,8 +92,8 @@ const generateCells = (pi, map, clickHandler, isEditingGrid) => {
 const rollD = (sides, check, index) => {
   let roll = Math.floor(Math.random() * sides)
   if (check) {
-    if (index !== undefined) console.log(`🎲[${index}]: ${roll} | Req: ${check} ${roll >= check ? '✔️' : '❌'}`)
-    else console.log(`🎲: ${roll} | Req: ${check} ${roll >= check ? '✔️' : '❌'}`)
+    if (index !== undefined) consolelog(`🎲[${index}]: ${roll} | Req: ${check} ${roll >= check ? '✔️' : '❌'}`)
+    else consolelog(`🎲: ${roll} | Req: ${check} ${roll >= check ? '✔️' : '❌'}`)
     return roll >= check
   } else return roll
 }

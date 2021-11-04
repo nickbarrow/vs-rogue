@@ -16,9 +16,9 @@ export default function PlayMap(props) {
     let tmpUD = {...ud}
 
     if (ud.mapStates[mapName]) {
-      console.log(`📌 Entering ${mapName}.`)
+      consolelog(`📌 Entering ${mapName}.`)
     } else {
-      console.log('🗺️ Entering new area...')
+      consolelog('🗺️ Entering new area...')
       let loadingMap = await getMap(mapName)
       loadingMap = await moveTo(loadingMap.tiles.findIndex(tile => tile.icon === '🚩'), loadingMap, null, ud.icon)
       tmpUD.mapStates[mapName] = {...loadingMap}
@@ -32,10 +32,10 @@ export default function PlayMap(props) {
   const start = async () => {
     // let ud = props.localUserData
     if (ud?.mapStates && ud.mapStates[ud.currentMap])
-      console.log('Loading from user progress...')
+      consolelog('Loading from user progress...')
     else {
       // Create & set new user data if none found.
-      console.log('No user data. Creating new save...')
+      consolelog('No user data. Creating new save...')
       // Utilize moveTo function to replace starting pin with player icon.
       let newMap = await getMap('map001')
       newMap = await moveTo(newMap.tiles.findIndex(tile => tile.icon === '📍'), newMap, null, '🧍‍♀️')
@@ -56,7 +56,7 @@ export default function PlayMap(props) {
   const handleInventoryItemClick = (i) => {
     let clickedItem = props.itemData.find(item => item.icon === ud.inventory[i])
 
-    if (!clickedItem?.action) { console.log('Item undefined'); return false }
+    if (!clickedItem?.action) { consolelog('Item undefined'); return false }
     
     switch (clickedItem.action) {
       case 'consume':
@@ -64,7 +64,7 @@ export default function PlayMap(props) {
         let effect = clickedItem.consumeEffect,
             effectType = effect[0],
             effectValue = effect.substr(1, effect.length-1)
-        console.log(`type: ${effectType} | val: ${parseInt(effectValue, 10)}`)
+        consolelog(`type: ${effectType} | val: ${parseInt(effectValue, 10)}`)
         break
       default: break
     }
@@ -78,11 +78,12 @@ export default function PlayMap(props) {
 
     // Validate action regardless of tile.
     if (!isAdjacent(i, pl, mapClone.size.width)) {
-      console.log("That's too far!")
+      consolelog("That's too far!")
       return false }
     
     let cItem = {...mapClone.tiles[i]}
-    // console.log(cItem)
+    
+    // consolelog(cItem)
     switch (mapClone.tiles[i].action) {
       case null:
         // Available to move
@@ -95,14 +96,19 @@ export default function PlayMap(props) {
         
       case 'harvest':
         if (!cItem.harvestItems) return false
+        if (cItem.harvestingDisabled === true) {
+          consolelog('Already harvested!')
+          return false }
+          
         let changed = false
         cItem.harvestItems.forEach((harvestItem, index) => {
           if (rollD(100, harvestItem.harvestCheck, index)) {
+            mapClone.tiles[i].harvestingDisabled = true
             tmpUD.inventory.push(props.itemData.find(item => item.icon === harvestItem.item))
             if (!changed) changed = true
           }
         })
-        if (changed) console.log(tmpUD.inventory)
+        if (changed) consolelog(tmpUD.inventory)
         break;
 
       case 'teleport':
@@ -115,8 +121,8 @@ export default function PlayMap(props) {
     
     // Update user mapstate regardless of action
     tmpUD.mapStates[ud.currentMap] = mapClone
-    setUserData(props.user.uid, tmpUD)
     props.setLocalUserData(tmpUD)
+    setUserData(props.user.uid, tmpUD)
   }
 
   // Autosave hook.
@@ -126,8 +132,8 @@ export default function PlayMap(props) {
   //     if (map) {
   //       if (props.user && localUserData){
   //         setUserData(props.user.uid, localUserData)
-  //         console.log('💾 Autosaved @ ', new Date())
-  //       } else console.log('autosave failed')
+  //         consolelog('💾 Autosaved @ ', new Date())
+  //       } else consolelog('autosave failed')
   //     }
   //   }, (AUTOSAVE_INTERVAL * 60000))
 

@@ -11,12 +11,20 @@ export default function App() {
   const [itemData, setItemData] = useState(null)
   const [localUserData, setLocalUserData] = useState(null)
   const [tool, setTool] = useState(null)
+  const [logs, setLogs] = useState([])
 
   useEffect(() => {
     // Load item data
     (async function() {
       setItemData(await getItems())
     })()
+
+    // Create consolelog function to intercept console logs.
+    window.consolelog = function (message) {
+      let log = typeof message === 'object' ? JSON.stringify(message, null, 2) : message
+      setLogs((currLogs) => [log, ...currLogs])
+      console.log(log)
+    }
   }, [])
 
   // Load user data into local state when user logs in.
@@ -40,6 +48,15 @@ export default function App() {
         tool={tool}
         />
 
+      <div className='console'>
+        <div className='console-toolbar'>
+          <div className='console-tab'>Terminal</div>
+          <div className='console-tab'>Problems</div>
+        </div>
+        <div className='logs'>
+          {logs.map(log => <pre className='log'>{log}</pre>)}
+        </div>
+      </div>
       <StatusBar tool={tool} setTool={setTool} />
     </div>
   );
