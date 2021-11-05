@@ -100,15 +100,13 @@ export default function PlayMap(props) {
           consolelog('Already harvested!')
           return false }
           
-        let changed = false
         cItem.harvestItems.forEach((harvestItem, index) => {
           if (rollD(100, harvestItem.harvestCheck, index)) {
             mapClone.tiles[i].harvestingDisabled = true
             tmpUD.inventory.push(props.itemData.find(item => item.icon === harvestItem.item))
-            if (!changed) changed = true
+            consolelog(`Picked up ${harvestItem.item}`)
           }
         })
-        if (changed) consolelog(tmpUD.inventory)
         break;
 
       case 'teleport':
