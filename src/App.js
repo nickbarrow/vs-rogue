@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import Editor from './components/editor'
 import StatusBar from './components/status-bar'
 import { getItems, getUserData } from './utils/firebase'
-import './styles.scss'
+// import './styles.scss'
+import './styles.css'
 import TitleBar from './components/title-bar'
 import Tabs from './components/tabs'
 
@@ -54,7 +55,7 @@ export default function App() {
           <div className='console-tab'>Problems</div>
         </div>
         <div className='logs'>
-          {logs.map(log => <pre className='log'>{log}</pre>)}
+          {logs.map((log, idx) => <pre className='log' key={idx}>{log}</pre>)}
         </div>
       </div>
       <StatusBar tool={tool} setTool={setTool} />

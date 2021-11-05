@@ -38,16 +38,13 @@ body {
   background-color: $bg;
   font-size: $fontSize;
   font-family: 'Ubuntu Mono';
+  scrollbar-width: 8px;
 }
 
-::-webkit-scrollbar {
-  width: 8px;
-}
+::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background-color: transparent; }
-::-webkit-scrollbar-thumb {
-  background-color: #3E4552;
-  // border-radius: 50px;
-}
+::-webkit-scrollbar-thumb { background-color: #3E4552; }
+
 .App {
   height: calc(100vh - #{$consoleHeight + $statusBarHeight});
 }
@@ -412,6 +409,7 @@ img.emoji {
   //   position: absolute;
   //   bottom: -3px;
   //   right: -5px;
+  //
   //   font-size: 16px;
   //   color: rgba(255, 255, 255, 0.3);
   // }

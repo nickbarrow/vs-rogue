@@ -22,7 +22,6 @@ export default function EditMap(props) {
         width: 5,
         height: 5
       },
-      teleportNodes: {},
       tiles: new Array(25).fill(new Item())
     })
   }

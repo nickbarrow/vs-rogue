@@ -1,0 +1,510 @@
+@charset "UTF-8";
+/*
+ * I DONT CARE HOW STINKY IT IS TO PUT ALL YOUR SASS IN 1 FILE
+ * TAKE *YOUR* SASS SOMEWHERE ELSE 😡
+ */
+/* --- VARS --- */
+@font-face {
+  font-family: "Segoe UI", sans-serif;
+  src: url("fonts/segoeui.ttf");
+}
+@font-face {
+  font-family: "Overpass Mono", monospace;
+  src: url("./fonts/OverpassMono-Regular.ttf");
+}
+:root {
+  --editor-text-padding: 5px 0;
+  --line-height: 26px;
+}
+
+@keyframes no {
+  25%, 50%, 75% {
+    transform: translate3d(-2px, 0, 0);
+  }
+  40%, 60% {
+    transform: translate3d(2px, 0, 0);
+  }
+}
+/* --- GLOBALS --- */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  background-color: #23272e;
+  font-size: 18px;
+  font-family: "Ubuntu Mono";
+  scrollbar-width: 8px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #3E4552;
+}
+
+.App {
+  height: calc(100vh - 176px);
+}
+
+/* --- TITLE BAR --- */
+.title-bar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 35px;
+  font-size: 16px;
+  color: #99A1B0;
+}
+.title-bar .left, .title-bar .right {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.title-bar .logo {
+  max-height: 60%;
+  padding: 0 10px;
+}
+.title-bar .btn {
+  font-family: "Segoe UI";
+  height: 100%;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.title-bar .btn:hover {
+  background-color: #393D43;
+}
+.title-bar .btn.window-control {
+  padding: 0 18px;
+}
+.title-bar .right .btn:last-child:hover {
+  color: white;
+  background-color: #ff2e2e;
+}
+
+/* --- TABS --- */
+.tabs {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 45px;
+  background-color: #1e2227;
+}
+.tabs .tab {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 100%;
+  padding: 0 15px;
+  color: #d7c084;
+  border-right: 1px solid #181a1f;
+  cursor: pointer;
+  font-family: "Segoe UI";
+  font-size: 16px;
+}
+.tabs .tab.active {
+  background-color: #23272e;
+}
+.tabs .tab.active .close {
+  visibility: visible;
+  color: gainsboro;
+}
+.tabs .tab:hover {
+  background-color: #323842;
+}
+.tabs .tab:hover .close {
+  visibility: visible;
+}
+.tabs .tab span {
+  margin: 10px;
+}
+.tabs .tab .close {
+  visibility: hidden;
+  display: inline-flex;
+  border-radius: 5px;
+  color: #8d8e86;
+  padding: 4px;
+}
+.tabs .tab .close:hover {
+  background-color: #3f444b;
+  animation: no 0.65s ease forwards;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+img.emoji {
+  height: 1em;
+  width: 1em;
+  margin: 0 0.05em 0 0.1em;
+  vertical-align: -0.1em;
+}
+
+/* --- EDITOR --- */
+.editor {
+  width: 100%;
+  height: calc(100vh - 256px);
+  overflow-y: auto;
+  padding-bottom: 26px;
+}
+.editor .welcome {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.editor .welcome .options {
+  width: 50%;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+}
+.editor .welcome .options img {
+  width: 100%;
+  margin-top: 100px;
+}
+
+/* --- CODE TEXT ---*/
+.code {
+  color: rgba(238, 238, 238, 0.9);
+  font-family: inherit;
+  line-height: 26px;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  user-select: none;
+  counter-reset: line;
+}
+.code .codeLine {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: 26px;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  transition: all ease 0.2s;
+  padding-left: 8ch;
+}
+.code .codeLine:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.code .codeLine:before {
+  counter-increment: line;
+  content: counter(line);
+  color: #495162;
+  position: absolute;
+  left: 3ch;
+  top: 2px;
+}
+.code pre {
+  margin: 0;
+  padding: 0;
+  display: inline;
+  font-family: "Ubuntu Mono";
+}
+.code .tb {
+  width: 2ch;
+  height: 26px;
+  border-left: 2px solid #3B4048;
+}
+.code .comment {
+  color: #4a5361;
+  font-style: italic;
+}
+.code .const {
+  color: #4ea6ff;
+  font-weight: bold;
+  margin: 0;
+}
+.code .var {
+  color: #FD7A71;
+  font-style: italic;
+  margin-right: 1ch;
+}
+.code .strg {
+  color: #FFB45E;
+  font-style: italic;
+}
+.code .ctrl {
+  color: #FFBE5E;
+  font-style: italic;
+  margin-right: 1ch;
+}
+.code .fn {
+  color: #B392F0;
+  font-style: italic;
+  cursor: pointer;
+  background-color: transparent;
+  padding: 2px 5px;
+  border-radius: 4px;
+  margin: 0 0 0 -0.5ch;
+  transition: all ease 0.3s;
+}
+.code .fn:hover {
+  color: white;
+  background-color: rgba(143, 90, 236, 0.75);
+}
+.code .fn:active {
+  opacity: 0.7;
+}
+.code i {
+  color: #DA9151;
+}
+.code i.ri {
+  color: #FF7B72;
+  font-style: italic;
+}
+.code i.c {
+  color: #76BCF9;
+}
+.code i.fn {
+  color: #8866C3;
+  font-style: italic;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all ease 0.3s;
+}
+.code i.fn:hover {
+  opacity: 0.7;
+}
+.code .fn-def {
+  display: inline;
+}
+.code .inline-input {
+  background-color: transparent;
+  border: none;
+  width: 4ch;
+  color: white;
+  font-family: inherit;
+  font-size: inherit;
+  border-bottom: 2px solid gray;
+  margin-left: 10px;
+  border-radius: 0;
+  padding: 0;
+}
+
+.map-grid {
+  display: grid;
+  width: max-content;
+  margin-left: 7ch;
+  position: relative;
+  user-select: none;
+  grid-gap: 5px;
+}
+.map-grid:before {
+  content: "arr = [";
+  position: absolute;
+  top: 0;
+  left: -7ch;
+  color: rgba(238, 238, 238, 0.9);
+  font-size: 18px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  width: 13ch;
+}
+.map-grid:after {
+  content: "]";
+  position: absolute;
+  bottom: 0;
+  left: 100%;
+  color: white;
+  font-size: 18px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* --- GRID --- */
+.grid {
+  display: grid;
+  width: 21ch;
+  height: auto;
+  margin-left: 6ch;
+  position: relative;
+  user-select: none;
+  cursor: default;
+  grid-template-columns: repeat(8, 26px);
+}
+.grid:before {
+  content: "a: [";
+  position: absolute;
+  top: 0;
+  left: -4ch;
+  color: white;
+  font-size: 18px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  width: 13ch;
+}
+.grid:after {
+  content: "]";
+  position: absolute;
+  bottom: 0;
+  left: 100%;
+  color: white;
+  font-size: 18px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* --- CELLS --- */
+.cell {
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  position: relative;
+  background-color: transparent;
+  transition: all ease 0.3s;
+}
+.cell.accessible {
+  cursor: pointer;
+  border: 1px solid rgba(218, 165, 32, 0.3);
+}
+.cell.accessible:hover {
+  background-color: rgba(218, 165, 32, 0.15);
+}
+.cell.accessible:active {
+  background-color: rgba(218, 165, 32, 0.75);
+}
+.cell.harvesting-disabled span {
+  cursor: default;
+  filter: grayscale(75%);
+  opacity: 0.8;
+}
+.cell:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* --- CONSOLE --- */
+.console {
+  color: #8B919C;
+  bottom: 26px;
+  left: 0;
+  width: 100%;
+  height: 150px;
+  padding: 0 20px;
+  border-top: 1px solid #44464B;
+  display: flex;
+  flex-direction: column;
+  background-color: #23272E;
+}
+.console .console-toolbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 5px;
+}
+.console .console-toolbar .console-tab {
+  font-family: "Segoe UI";
+  font-size: 10px;
+  text-transform: uppercase;
+  color: #999B9D;
+  padding: 8px 5px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+.console .console-toolbar .console-tab:first-child {
+  color: white;
+  border-bottom: 1px solid white;
+}
+.console .console-toolbar .console-tab:hover {
+  color: white;
+}
+.console .logs {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-start;
+  overflow-y: auto;
+}
+.console .logs .log {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  color: #ABB2BF;
+  font-size: 14px;
+  font-family: "Ubuntu Mono";
+  white-space: break-spaces;
+}
+
+/* --- STATUS BAR --- */
+.status-bar {
+  width: 100%;
+  height: 26px;
+  font-size: 12px;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  color: #959DAC;
+  background-color: #1E2227;
+  user-select: none;
+}
+.status-bar .sb-btn {
+  position: relative;
+  height: 100%;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+.status-bar .sb-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+.status-bar .sb-btn .submenu {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background-color: black;
+  border: 1px solid white;
+  opacity: 0;
+  visibility: hidden;
+  transition: all ease 0.3s;
+}
+.status-bar .sb-btn .submenu.active {
+  visibility: visible;
+  opacity: 1;
+}
+.status-bar .tools b {
+  margin-right: 5px;
+}
+.status-bar .tools .toolbox {
+  display: grid;
+  grid-template-columns: repeat(5, 26px);
+}
+.status-bar .tools .toolbox .tool {
+  font-size: 18px;
+  height: 26px;
+  border: 1px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all ease 0.2s;
+}
+.status-bar .tools .toolbox .tool:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}

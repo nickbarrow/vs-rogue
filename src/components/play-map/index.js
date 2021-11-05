@@ -17,10 +17,13 @@ export default function PlayMap(props) {
 
     if (ud.mapStates[mapName]) {
       consolelog(`📌 Entering ${mapName}.`)
+      consolelog(ud.mapStates[mapName].arrivalPoints)
     } else {
       consolelog('🗺️ Entering new area...')
-      let loadingMap = await getMap(mapName)
-      loadingMap = await moveTo(loadingMap.tiles.findIndex(tile => tile.icon === '🚩'), loadingMap, null, ud.icon)
+      let loadingMap = await getMap(mapName),
+          startIdx = loadingMap.tiles.findIndex(tile => tile.icon === '📍') >= 0 ? loadingMap.tiles.findIndex(tile => tile.icon === '📍') : loadingMap.tiles.findIndex(tile => tile.icon === '🚩')
+      loadingMap.arrivalPoints = loadingMap.tiles.filter((tile, index) => { if (tile.icon === '🚩') return {...tile, index } })
+      loadingMap = await moveTo(startIdx, loadingMap, null, ud.icon)
       tmpUD.mapStates[mapName] = {...loadingMap}
     }
     tmpUD.currentMap = mapName
@@ -30,25 +33,25 @@ export default function PlayMap(props) {
   
   // Init game using user data or begin from test map.
   const start = async () => {
+    consolelog(ud)
     // let ud = props.localUserData
-    if (ud?.mapStates && ud.mapStates[ud.currentMap])
+    if (ud?.mapStates && ud.mapStates[ud.currentMap]) {
       consolelog('Loading from user progress...')
-    else {
+      await loadMap(ud.mapStates[ud.currentMap].title)
+    } else {
       // Create & set new user data if none found.
-      consolelog('No user data. Creating new save...')
+      consolelog('🚩 Loading starting area...')
+
       // Utilize moveTo function to replace starting pin with player icon.
-      let newMap = await getMap('map001')
-      newMap = await moveTo(newMap.tiles.findIndex(tile => tile.icon === '📍'), newMap, null, '🧍‍♀️')
-      let newUd = {
-        icon: '🧍‍♀️',
-        xp: 0,
-        inventory: [],
-        currentMap: 'map001',
-        mapStates: { 'map001': newMap }
-      }
-      await setUserData(props.user.uid, newUd)
+      // let newMap = await getMap('map001')
+      // newMap.arrivalPoints = newMap.tiles.filter(tile => tile.icon === '🚩')
+      // newMap = await moveTo(newMap.tiles.findIndex(tile => tile.icon === '📍'), newMap, null, '🧍‍♀️')
+      
+      // await setUserData(props.user.uid, newUd)
       // Update local user data
-      props.setLocalUserData(newUd)
+      // props.setLocalUserData(newUd)
+      // setUd(newUd)
+      await loadMap('map001')
     }
     toggleMap(true)
   }
@@ -169,9 +172,16 @@ export default function PlayMap(props) {
               <CL>{']'}</CL>
             </div>
           ) : ''}
+          <CL>
+            <AFN name='close' f={async () => { toggleMap(false) }}></AFN>{'}'}
+          </CL>
           <CL><Comment val='// Reset user data.' /></CL>
           <CL>
-            <AFN name='reset' f={async () => { await setUserData(props.user.uid, {}) }}></AFN>{'}'}
+            <AFN name='reset' f={async () => {
+              await setUserData(props.user.uid, {})
+              props.setLocalUserData({})
+              toggleMap(false)
+              }}></AFN>{'}'}
           </CL>
           <CL></CL>
         </>

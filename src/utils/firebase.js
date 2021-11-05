@@ -27,10 +27,8 @@ const getMap = async (mapName) => {
 
 const normalizeMap = map => {
   let m = {...map}
-  for (let i = 0; i < m.tiles.length; i++) {
-    if (!m.tiles[i] instanceof Item) m.tiles[i] = new Item()
-    m.tiles[i] = JSON.parse(JSON.stringify(m.tiles[i]))
-  }
+  for (let i = 0; i < m.tiles.length; i++)
+    if (m.tiles[i] instanceof Item) m.tiles[i] = JSON.parse(JSON.stringify(m.tiles[i]))
   return m
 }
 
@@ -65,7 +63,17 @@ const getItems = async (item) => {
 const getUserData = async (uid) => {
   const userDataSnap = await getDoc(doc(firestore, 'userData', uid))
   if (userDataSnap.exists()) return userDataSnap.data()
-  else return null
+  else {
+    consolelog('No user data found. Creating new save...')
+    let newUd = {
+      icon: '🧍‍♀️',
+      xp: 0,
+      inventory: [],
+      mapStates: {}
+    }
+    await setUserData(uid, newUd)
+    return newUd
+  }
 }
 
 /**
@@ -74,8 +82,13 @@ const getUserData = async (uid) => {
  * @param {*} data - Data to save for user.
  */
 const setUserData = async (uid, data) => {
-  if (data.mapStates && data.mapStates[data.currentMap]) data.mapStates[data.currentMap] = normalizeMap(data.mapStates[data.currentMap])
-  await setDoc(doc(firestore, 'userData', uid), data)
+  let tmpData = {...data}
+  if (tmpData.mapStates[tmpData.currentMap]?.tiles.some(tile => tile instanceof Item)) {
+    console.log('Current map needs normalized!')
+    tmpData.mapStates[tmpData.currentMap] = normalizeMap(tmpData.mapStates[tmpData.currentMap])
+  }
+  await setDoc(doc(firestore, 'userData', uid), tmpData)
+  consolelog('💾 Saved.')
 }
 
 export { auth, firestore, getMap, saveMap, getItems, getUserData, setUserData }
