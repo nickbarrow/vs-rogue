@@ -313,6 +313,10 @@ img.emoji {
   position: relative;
   user-select: none;
   grid-gap: 5px;
+  transition: opacity ease .5s;
+  opacity: 1;
+
+  &.faded { opacity: 0; }
   
   &:before {
     content: 'arr = [';

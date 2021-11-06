@@ -31,10 +31,10 @@ export default function App() {
   // Load user data into local state when user logs in.
   useEffect(() => {
     (async function () {
-      if (user && !localUserData)
+      if (user && (!localUserData || Object.keys(localUserData).length === 0))
         setLocalUserData(await getUserData(user.uid))
     })()
-  }, [user])
+  }, [user, localUserData])
   
   return (
     <div className='App'>

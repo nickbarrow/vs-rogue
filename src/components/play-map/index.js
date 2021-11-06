@@ -8,49 +8,52 @@ export default function PlayMap(props) {
   const [showMap, toggleMap] = useState(false)
   const [showInventory, toggleInventory] = useState(false)
   const [ud, setUd] = useState(null)
+  const [fading, toggleFading] = useState(false)
 
   // Update shorthand version of localUserData.
   useEffect(() => { setUd(props.localUserData) }, [props.localUserData])
   
   const loadMap = async (mapName) => {
-    let tmpUD = {...ud}
+    let tmpUD = {...ud}, loadingMap, startIdx
 
-    if (ud.mapStates[mapName]) {
+    if (ud.mapStates?.[mapName]) {
       consolelog(`📌 Entering ${mapName}.`)
-      consolelog(ud.mapStates[mapName].arrivalPoints)
+      // If we've visited this map and we are teleporting, get and move to arrival pt.
+      if (ud.currentMap != mapName) {
+        let pt = ud.mapStates[mapName].arrivalPoints.find(point => point.origin === ud.currentMap)
+        if (pt) {
+          loadingMap = {...ud.mapStates[mapName]}
+          startIdx = pt.index
+          loadingMap = await moveTo(startIdx, loadingMap, loadingMap.tiles.findIndex(tile => tile.icon === ud.icon), ud.icon)
+        }
+      }
     } else {
       consolelog('🗺️ Entering new area...')
-      let loadingMap = await getMap(mapName),
-          startIdx = loadingMap.tiles.findIndex(tile => tile.icon === '📍') >= 0 ? loadingMap.tiles.findIndex(tile => tile.icon === '📍') : loadingMap.tiles.findIndex(tile => tile.icon === '🚩')
-      loadingMap.arrivalPoints = loadingMap.tiles.filter((tile, index) => { if (tile.icon === '🚩') return {...tile, index } })
+      // Get fresh map from database.
+      loadingMap = await getMap(mapName)
+      // Find player start location (1st map pin or teleport arrival).
+      startIdx = loadingMap.tiles.findIndex(tile => tile.icon === '📍') >= 0 ? loadingMap.tiles.findIndex(tile => tile.icon === '📍') : loadingMap.tiles.findIndex(tile => tile.icon === '🚩')
+      // Load arrivalPoints of each map 1st time loaded before arrival pt is
+      // overwritten with player.
+      loadingMap.arrivalPoints = loadingMap.tiles.reduce((prev, curr, index) => {
+        if (curr.icon === '🚩') prev.push({...curr, index}); return prev }, [])
+      // Move player icon to starting location
       loadingMap = await moveTo(startIdx, loadingMap, null, ud.icon)
+      // Set user data
       tmpUD.mapStates[mapName] = {...loadingMap}
     }
     tmpUD.currentMap = mapName
     await setUserData(props.user.uid, tmpUD)
     props.setLocalUserData(tmpUD)
+    toggleFading(false)
   }
   
   // Init game using user data or begin from test map.
   const start = async () => {
-    consolelog(ud)
-    // let ud = props.localUserData
-    if (ud?.mapStates && ud.mapStates[ud.currentMap]) {
-      consolelog('Loading from user progress...')
+    if (ud.mapStates?.[ud.currentMap]) 
       await loadMap(ud.mapStates[ud.currentMap].title)
-    } else {
-      // Create & set new user data if none found.
+    else {
       consolelog('🚩 Loading starting area...')
-
-      // Utilize moveTo function to replace starting pin with player icon.
-      // let newMap = await getMap('map001')
-      // newMap.arrivalPoints = newMap.tiles.filter(tile => tile.icon === '🚩')
-      // newMap = await moveTo(newMap.tiles.findIndex(tile => tile.icon === '📍'), newMap, null, '🧍‍♀️')
-      
-      // await setUserData(props.user.uid, newUd)
-      // Update local user data
-      // props.setLocalUserData(newUd)
-      // setUd(newUd)
       await loadMap('map001')
     }
     toggleMap(true)
@@ -80,13 +83,11 @@ export default function PlayMap(props) {
         tmpUD = {...ud}
 
     // Validate action regardless of tile.
-    if (!isAdjacent(i, pl, mapClone.size.width)) {
+    if (!isAdjacent(i, pl, mapClone.size.width, 2)) {
       consolelog("That's too far!")
       return false }
     
     let cItem = {...mapClone.tiles[i]}
-    
-    // consolelog(cItem)
     switch (mapClone.tiles[i].action) {
       case null:
         // Available to move
@@ -113,7 +114,10 @@ export default function PlayMap(props) {
         break;
 
       case 'teleport':
-        await loadMap(cItem.teleportTo)
+        if (isAdjacent(i, pl, mapClone.size.width, 1)) {
+          toggleFading(true)
+          await loadMap(cItem.teleportTo) }
+        else consolelog("I can't reach the door handle from here!")
         return
         break
         
@@ -149,7 +153,7 @@ export default function PlayMap(props) {
         <CL>{`var title = '${ud.currentMap}', arr`}</CL>
           <CL>
             <div
-              className="map-grid"
+              className={`map-grid ${fading ? 'faded' : ''}`}
               style={{
                 gridTemplateColumns: `repeat(${ud.mapStates[ud.currentMap].size.width}, var(--line-height))`,
                 gridTemplateRows: `repeat(${ud.mapStates[ud.currentMap].size.height}, var(--line-height))`

@@ -62,8 +62,10 @@ const getItems = async (item) => {
 
 const getUserData = async (uid) => {
   const userDataSnap = await getDoc(doc(firestore, 'userData', uid))
-  if (userDataSnap.exists()) return userDataSnap.data()
-  else {
+  if (userDataSnap.exists() && Object.keys(userDataSnap.data()).length !== 0) {
+    consolelog('💾 User data found.')
+    return userDataSnap.data()
+  } else {
     consolelog('No user data found. Creating new save...')
     let newUd = {
       icon: '🧍‍♀️',
@@ -83,12 +85,11 @@ const getUserData = async (uid) => {
  */
 const setUserData = async (uid, data) => {
   let tmpData = {...data}
-  if (tmpData.mapStates[tmpData.currentMap]?.tiles.some(tile => tile instanceof Item)) {
+  if (tmpData.mapStates?.[tmpData.currentMap]?.tiles.some(tile => tile instanceof Item)) {
     console.log('Current map needs normalized!')
     tmpData.mapStates[tmpData.currentMap] = normalizeMap(tmpData.mapStates[tmpData.currentMap])
   }
   await setDoc(doc(firestore, 'userData', uid), tmpData)
-  consolelog('💾 Saved.')
 }
 
 export { auth, firestore, getMap, saveMap, getItems, getUserData, setUserData }

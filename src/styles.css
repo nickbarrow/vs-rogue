@@ -305,6 +305,11 @@ img.emoji {
   position: relative;
   user-select: none;
   grid-gap: 5px;
+  transition: opacity ease 0.5s;
+  opacity: 1;
+}
+.map-grid.faded {
+  opacity: 0;
 }
 .map-grid:before {
   content: "arr = [";

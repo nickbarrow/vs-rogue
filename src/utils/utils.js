@@ -5,9 +5,9 @@ import Item from "../models/Item"
  * @param {*} i - Index of tile to test.
  * @param {*} pl - Index of current player location.
  * @param {*} w - Width of grid.
- * @param {*} h - Width of grid.
+ * @param {*} r - Adjacency radius.
  */
-const isAdjacent = (i, pl, w) => {
+const isAdjacent = (i, pl, w, r) => {
   // I hate that math is cool 🤓
   let pla = pl+1,               // player location adjusted (non-0-indexed)
       px = pla % w || w,        // player x coord (origin top-left)
@@ -17,14 +17,14 @@ const isAdjacent = (i, pl, w) => {
       iy = Math.ceil(ia / w)    // cell y coord
       
   // Prevent left overflow
-  if (ix >= (w-1) && px <= 2) return false
+  if (ix >= (w-(r-1)) && px <= r) return false
   // Prevent right overflow
-  if (ix <= 2 && px >= (w-1)) return false
+  if (ix <= r && px >= (w-(r-1))) return false
 
   let yDiff = Math.abs(py - iy),
       xDiff = Math.abs(px - ix)
 
-  if (yDiff <= 2 && xDiff <= 2) return true
+  if (yDiff <= r && xDiff <= r) return true
   else return false
 }
 
@@ -56,7 +56,7 @@ const generateCells = (pi, map, clickHandler, isEditingGrid) => {
   for (let i = 0; i < h; i++) {
     for (let j = 0; j < w; j++) {
       let index = i * w + j,
-          imAdjacent = isEditingGrid ? false : isAdjacent(index, pl, w)
+          imAdjacent = isEditingGrid ? false : isAdjacent(index, pl, w, 2)
 
       g.push(
         <div
@@ -97,5 +97,12 @@ const rollD = (sides, check, index) => {
     return roll >= check
   } else return roll
 }
+
+// WIP
+// const pathfinder = (start, end, maxMoves) => {
+//   let moves = maxMoves.map(move => {
+
+//   })
+// }
 
 export { generateCells, isAdjacent, moveTo, rollD }

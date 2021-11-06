@@ -22,7 +22,7 @@ export default function EditMap(props) {
         width: 5,
         height: 5
       },
-      tiles: new Array(25).fill(new Item())
+      tiles: new Array(25).fill({})
     })
   }
 
@@ -35,25 +35,25 @@ export default function EditMap(props) {
         case 'teleport':
           let dest = prompt("Enter destination map:")
           if (!dest) return false
-          else newVal = new Item({...toolItem, ...{ teleportTo: dest }})
+          else newVal = {...toolItem, ...{ teleportTo: dest }}
           break
         case 'arrive':
           let origin = prompt("Enter origin map:")
           if (!origin) return false
-          else newVal = new Item({...toolItem, ...{ origin: origin }})
+          else newVal = {...toolItem, ...{ origin: origin }}
           break
         case 'info':
           console.log(mapClone.tiles[i])
           return
           break
         case 'clear':
-          newVal = new Item()
+          newVal = {}
           break
         default:
-          newVal = new Item(toolItem)
+          newVal = toolItem
           break
       }
-    } else newVal = new Item()
+    } else newVal = {}
     mapClone.tiles[i] = newVal
     setEditingMap(mapClone)
   }
@@ -90,7 +90,7 @@ export default function EditMap(props) {
           let r = []
           for (let j = 0; j < newW; j++) {
             let oldIndex = i * oldW + j
-            j > oldW-1 ? r.push(new Item()) : r.push(tiles[oldIndex])
+            j > oldW-1 ? r.push({}) : r.push(tiles[oldIndex])
           }
           newTiles.push(r)
         }
@@ -101,7 +101,7 @@ export default function EditMap(props) {
       // More rows
       else if (newH > oldH) {
         newTiles = tiles
-        for (let i = tiles.length; i < newW * newH; i++) newTiles.push(new Item())
+        for (let i = tiles.length; i < newW * newH; i++) newTiles.push({})
       }
     } else return // No change so don't update.
 
