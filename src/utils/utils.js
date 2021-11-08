@@ -32,12 +32,14 @@ const isAdjacent = (i, pl, w, r) => {
  * 
  * @param {*} i - Index of cell to move to.
  * @param {*} m - Map to update.
+ * @param {*} pl - Optional player location. Use null if not moving anything.
+ * @param {*} pi - Player icon to use.
  */
 const moveTo = (i, m, pl, pi) => {
   if (!m.tiles) return null
   let mapClone = {...m}
-  if (pl !== null && pl >= 0 && pl <= m.tiles.length-1) mapClone.tiles[pl] = new Item()
-  mapClone.tiles[i] = new Item({ title: 'Player', icon: pi, action: 'inventory' });
+  if (pl !== null && pl >= 0 && pl <= m.tiles.length-1) mapClone.tiles[pl] = { icon: null, action: null}
+  if (i !== null) mapClone.tiles[i] = { title: 'Player', icon: pi, action: 'inventory' }
   return mapClone
 }
 

@@ -408,6 +408,15 @@ img.emoji {
 
   &:hover { background-color: rgba(255, 255, 255, 0.2); }
   
+  
+  &.equipped {
+    cursor: pointer;
+    border: 1px solid rgb(30, 192, 16);
+    
+    &:hover { background-color: rgba(218, 165, 32, 0.15); }
+    &:active { background-color: rgba(218, 165, 32, 0.75); }
+  }
+
   // &:not(:last-child):after {
   //   content: ',';
   //   position: absolute;
@@ -427,7 +436,7 @@ img.emoji {
   left: 0;
   width: 100%;
   height: $consoleHeight;
-  padding: 0 20px;
+  // padding: 0 20px;
   border-top: 1px solid #44464B;
   display: flex;
   flex-direction: column;
@@ -438,6 +447,7 @@ img.emoji {
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
+    padding: 0 20px;
     margin-bottom: 5px;
 
     .console-tab {
@@ -464,13 +474,17 @@ img.emoji {
     overflow-y: auto;
 
     .log {
-      padding: 0;
+      padding: 5px 20px;
       margin: 0;
       width: 100%;
       color: #ABB2BF;
       font-size: 14px;
       font-family: 'Ubuntu Mono';
       white-space: break-spaces;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      line-height: 16px;
+
+      &:last-child { border-top: 1px solid rgba(255, 255, 255, 0.05); }
     }
   }
 }

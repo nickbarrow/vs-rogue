@@ -2,7 +2,6 @@ import { useRef, useState } from 'react'
 import { getMap, saveMap } from '../../utils/firebase'
 import { generateCells } from '../../utils/utils'
 import { CL, Comment, FN, Var, Ctrl, Const, Tb, AFN } from '../code-text'
-import Item from '../../models/Item'
 
 export default function EditMap(props) {
   const [editingMap, setEditingMap] = useState(null)
@@ -30,7 +29,7 @@ export default function EditMap(props) {
     let mapClone = { ...editingMap }, newVal
       
     if (props.tool) {
-      let toolItem = props.itemData.find(item => item.icon === props.tool)
+      let toolItem = props.itemData.find(item => item.icon === props.tool) || { icon: null, action: null }
       switch (toolItem.action) {
         case 'teleport':
           let dest = prompt("Enter destination map:")
@@ -47,13 +46,11 @@ export default function EditMap(props) {
           return
           break
         case 'clear':
-          newVal = {}
-          break
         default:
           newVal = toolItem
           break
       }
-    } else newVal = {}
+    } else newVal = { icon: null, action: null }
     mapClone.tiles[i] = newVal
     setEditingMap(mapClone)
   }

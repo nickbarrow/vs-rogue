@@ -36,11 +36,11 @@ export default function TitleBar (props) {
             </div>
             
 
-            <div className="right">
+            {/* <div className="right">
                 <div className='btn window-control'><VscChromeMinimize /></div>
                 <div className='btn window-control'><VscChromeRestore /></div>
                 <div className='btn window-control'><VscChromeClose /></div>
-            </div>
+            </div> */}
         </div>
     )
 }

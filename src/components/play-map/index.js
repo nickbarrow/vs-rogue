@@ -60,19 +60,26 @@ export default function PlayMap(props) {
   }
 
   const handleInventoryItemClick = (i) => {
-    let clickedItem = props.itemData.find(item => item.icon === ud.inventory[i])
+    let clickedItem = props.itemData.find(item => item.icon === ud.inventory[i].icon),
+        tmpUD = {...ud}
 
     if (!clickedItem?.action) { consolelog('Item undefined'); return false }
     
-    switch (clickedItem.action) {
-      case 'consume':
-        if (!clickedItem.consumeEffect) return false
-        let effect = clickedItem.consumeEffect,
-            effectType = effect[0],
-            effectValue = effect.substr(1, effect.length-1)
-        consolelog(`type: ${effectType} | val: ${parseInt(effectValue, 10)}`)
+    switch (clickedItem.type) {
+      case 'tool':
+        tmpUD.eqippedItem = i
+        props.setLocalUserData(tmpUD)
         break
-      default: break
+      // case 'consume':
+      //   if (!clickedItem.consumeEffect) return false
+      //   let effect = clickedItem.consumeEffect,
+      //       effectType = effect[0],
+      //       effectValue = effect.substr(1, effect.length-1)
+      //   consolelog(`type: ${effectType} | val: ${parseInt(effectValue, 10)}`)
+      //   break
+      default:
+        consolelog(clickedItem)
+        break
     }
   }
 
@@ -96,6 +103,11 @@ export default function PlayMap(props) {
 
       case 'inventory':
         toggleInventory(!showInventory)
+        break
+
+      case 'pickup':
+        tmpUD.inventory.push(mapClone.tiles[i])
+        mapClone = moveTo(null, mapClone, i, null)
         break
         
       case 'harvest':
@@ -121,7 +133,9 @@ export default function PlayMap(props) {
         return
         break
         
-      default: break
+      default:
+        consolelog(mapClone.tiles[i])
+        break
     }
     
     // Update user mapstate regardless of action
@@ -167,7 +181,7 @@ export default function PlayMap(props) {
               <CL className='inventory'>
                 {ud?.inventory?.map((item, index) => {
                   return <div
-                            className='cell'
+                            className={`cell ${ud.equippedItem === index ? 'equipped' : ''}`}
                             onClick={() => { handleInventoryItemClick(index) }}
                             key={index}>
                             {item.icon}
