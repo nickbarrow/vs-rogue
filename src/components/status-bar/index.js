@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getItems } from '../../utils/firebase'
+import { VscSourceControl, VscSync } from 'react-icons/vsc'
 import Twemoji from 'react-twemoji'
 
 export default function StatusBar(props) {
@@ -23,6 +24,18 @@ export default function StatusBar(props) {
 
   return (
     <div className='status-bar'>
+      
+      <div className='sb-btn tools' onClick={() => {  }}>
+        <div style={{ transform: 'rotate(90deg)', marginRight: '10px' }}>
+          <VscSourceControl color={"#959DAC"} />
+        </div>
+        <span>main*</span>
+      </div>
+
+      <div className='sb-btn'>
+        <VscSync color={"#959DAC"} />
+      </div>
+
       <div className='sb-btn tools' onClick={() => { toggleTools(!showTools) }}>
         <span><b>Current Tool:</b>{props.tool || 'None'}</span>
 

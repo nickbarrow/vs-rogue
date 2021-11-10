@@ -1,5 +1,3 @@
-import Item from "../models/Item"
-
 /**
  * Determines if a tile is within 2 squares of player location.
  * @param {*} i - Index of tile to test.
@@ -94,17 +92,37 @@ const generateCells = (pi, map, clickHandler, isEditingGrid) => {
 const rollD = (sides, check, index) => {
   let roll = Math.floor(Math.random() * sides)
   if (check) {
-    if (index !== undefined) consolelog(`🎲[${index}]: ${roll} | Req: ${check} ${roll >= check ? '✔️' : '❌'}`)
-    else consolelog(`🎲: ${roll} | Req: ${check} ${roll >= check ? '✔️' : '❌'}`)
+    if (index !== undefined) console.log(`🎲[${index}]: ${roll} | Req: ${check} ${roll >= check ? '✔️' : '❌'}`)
+    else console.log(`🎲: ${roll} | Req: ${check} ${roll >= check ? '✔️' : '❌'}`)
     return roll >= check
   } else return roll
 }
 
-// WIP
-// const pathfinder = (start, end, maxMoves) => {
-//   let moves = maxMoves.map(move => {
+/**
+ * Function that harvests from a list of possible harvest items.
+ * @param {*} harvestArray - List of harvestable items.
+ * @param {*} successCallback - Function which will be called if harvest succeeded.
+ */
+const harvest = async (harvestArray, successCallback) => {
+  if (harvestArray.length)
+    harvestArray.forEach(async (harvestItem, idx) => {
+      if (rollD(100, harvestItem.harvestCheck, idx)) await successCallback(idx)
+    })
+}
 
-//   })
-// }
+/**
+ * Returns if user currently has a tool equipped as boolean.
+ * @param {*} ud - User dataset to check against.
+ */
+const toolEquipped = (ud) => {
+  if ('equippedItem' in ud
+      && ud.equippedItem !== null
+      && ud.inventory[ud.equippedItem].type === 'tool') return true
+  else return false
+}
 
-export { generateCells, isAdjacent, moveTo, rollD }
+const toolable = (item) => {
+  return (item.action !== null && item.action !== 'inventory' && !item.harvestingDisabled) ? true : false
+}
+
+export { generateCells, isAdjacent, moveTo, rollD, harvest, toolEquipped, toolable }

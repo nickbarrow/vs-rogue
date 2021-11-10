@@ -19,11 +19,12 @@ export default function App() {
       setItemData(await getItems())
     })()
 
-    // Create consolelog function to intercept console logs.
-    window.consolelog = function (message) {
+    // Create console.log function to intercept console logs.
+    let oldCL = window.console.log
+    window.console.log = function (message) {
       let log = typeof message === 'object' ? JSON.stringify(message, null, 2) : message
       setLogs((currLogs) => [log, ...currLogs])
-      console.log(log)
+      oldCL(log)
     }
   }, [])
 

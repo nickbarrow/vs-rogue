@@ -26,7 +26,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "watch": "concurrently --kill-others \"react-scripts start\" \"sass src/:src/ --watch --no-source-map\""
+    "dev": "concurrently --kill-others \"set PORT=3006 && react-scripts start\" \"sass src/:src/ --watch --no-source-map\""
   },
   "browserslist": [
     ">0.2%",

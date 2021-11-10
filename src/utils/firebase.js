@@ -63,10 +63,10 @@ const getItems = async (item) => {
 const getUserData = async (uid) => {
   const userDataSnap = await getDoc(doc(firestore, 'userData', uid))
   if (userDataSnap.exists() && Object.keys(userDataSnap.data()).length !== 0) {
-    consolelog('💾 User data found.')
+    console.log('💾 User data found.')
     return userDataSnap.data()
   } else {
-    consolelog('No user data found. Creating new save...')
+    console.log('No user data found. Creating new save...')
     let newUd = {
       icon: '🧍‍♀️',
       xp: 0,

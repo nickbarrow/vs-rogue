@@ -52,7 +52,7 @@ body {
 }
 
 .App {
-  height: calc(100vh - 176px);
+  height: calc(100vh - 172px);
 }
 
 /* --- TITLE BAR --- */
@@ -156,7 +156,7 @@ img.emoji {
 /* --- EDITOR --- */
 .editor {
   width: 100%;
-  height: calc(100vh - 256px);
+  height: calc(100vh - 252px);
   overflow-y: auto;
   padding-bottom: 26px;
 }
@@ -415,7 +415,7 @@ img.emoji {
 /* --- CONSOLE --- */
 .console {
   color: #8B919C;
-  bottom: 26px;
+  bottom: 22px;
   left: 0;
   width: 100%;
   height: 150px;
@@ -472,7 +472,7 @@ img.emoji {
 /* --- STATUS BAR --- */
 .status-bar {
   width: 100%;
-  height: 26px;
+  height: 22px;
   font-size: 12px;
   bottom: 0;
   left: 0;
@@ -486,11 +486,11 @@ img.emoji {
 .status-bar .sb-btn {
   position: relative;
   height: 100%;
-  padding: 10px;
+  padding: 0 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  margin-right: 10px;
+  margin-right: 5px;
 }
 .status-bar .sb-btn:hover {
   background-color: rgba(255, 255, 255, 0.2);
