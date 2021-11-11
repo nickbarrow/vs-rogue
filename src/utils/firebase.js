@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app"
 import { getFirestore, doc, setDoc, getDoc, getDocs, collection } from 'firebase/firestore'
 import { getAuth } from "firebase/auth";
 import Item from '../models/Item'
+import Map from '../models/Map'
 
 const firebaseConfig = {
   apiKey: "AIzaSyAOYfLpH4NWjjC1WiOTsFlIWnCgvlDrRbc",
@@ -34,12 +35,7 @@ const normalizeMap = map => {
 
 // Save a map to firestore.
 const saveMap = async (map) => {
-  // for (let i = 0; i < map.tiles.length; i++) {
-  //   // if (typeof map.tiles[i] !== 'string') map.tiles[i] = ''
-  //   if (!map.tiles[i] instanceof Item) map.tiles[i] = new Item()
-  //   map.tiles[i] = JSON.parse(JSON.stringify(map.tiles[i]))
-  // }
-  await setDoc(doc(firestore, 'maps', map.title), normalizeMap(map))
+  await setDoc(doc(firestore, 'maps', map.title), map)
 }
 
 const getItems = async (item) => {

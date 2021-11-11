@@ -81,18 +81,14 @@ body {
   display: inline-flex;
   align-items: center;
   padding: 0 10px;
-  cursor: pointer;
+  cursor: default;
   white-space: nowrap;
 }
 .title-bar .btn:hover {
   background-color: #393D43;
 }
-.title-bar .btn.window-control {
-  padding: 0 18px;
-}
-.title-bar .right .btn:last-child:hover {
-  color: white;
-  background-color: #ff2e2e;
+.title-bar .btn:last-child {
+  cursor: pointer;
 }
 
 /* --- TABS --- */

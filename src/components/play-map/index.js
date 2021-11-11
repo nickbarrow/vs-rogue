@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getMap, setUserData } from '../../utils/firebase'
-import { CL, Comment, AFN, FN, Var, Ctrl, Const, Tb } from '../code-text'
+import { CL, Comment, AFN, Var, Ctrl, Const, Tb } from '../code-text'
 import { generateCells, isAdjacent, moveTo, harvest, toolEquipped } from '../../utils/utils'
 
 export default function PlayMap(props) {
@@ -10,7 +10,7 @@ export default function PlayMap(props) {
   const [ud, setUd] = useState(null)
   const [fading, toggleFading] = useState(false)
 
-  // Update shorthand version of localUserData.
+  // Hook to update shorthand version of localUserData.
   useEffect(() => { setUd(props.localUserData) }, [props.localUserData])
   
   const loadMap = async (mapName) => {
@@ -42,11 +42,9 @@ export default function PlayMap(props) {
         return prev
       }, [])
 
-      console.log(JSON.stringify(loadingMap.arrivalPoints, null, 2))
-
       // Find player start location (1st map pin or teleport arrival).
       startIdx = mapName === 'map001' ? loadingMap.tiles.findIndex(tile => tile.icon === '📍')
-        : loadingMap.arrivalPoints.findIndex(pt => pt.origin === ud.currentMap)
+        : loadingMap.arrivalPoints.find(pt => pt.origin === ud.currentMap).index
       // Move player icon to starting location
       loadingMap = await moveTo(startIdx, loadingMap, null, ud.icon)
       // Set user data
@@ -60,13 +58,15 @@ export default function PlayMap(props) {
   
   // Init game using user data or begin from test map.
   const start = async () => {
-    if (ud.mapStates?.[ud.currentMap]) 
-      await loadMap(ud.mapStates[ud.currentMap].title)
-    else {
-      console.log('🚩 Loading starting area...')
-      await loadMap('map001')
-    }
+    if (ud.mapStates?.[ud.currentMap]) await loadMap(ud.mapStates[ud.currentMap].title)
+    else await loadMap('map001')  // Load map001 as starting map.
     toggleMap(true)
+  }
+
+  // Updates local and server user data.
+  const updateData = (data) => {
+    props.setLocalUserData(data)
+    setUserData(props.user.uid, data)
   }
 
   const handleInventoryItemClick = (i) => {
@@ -96,58 +96,71 @@ export default function PlayMap(props) {
     setUserData(props.user.uid, tmpUD)
   }
 
+  // Clicked map tile.
   const handleCellClick = async (i) => {
     let mapClone = {...ud.mapStates[ud.currentMap]},
         pi = ud.icon,
         pl = mapClone.tiles.findIndex(e => e.icon === pi || e.icon === '📍'),
         tmpUD = {...ud},
-        // cItem = {...mapClone.tiles[i]},
-        cItem = props.itemData.find(item => item.icon === mapClone.tiles[i].icon) || mapClone.tiles[i]
+        cTile = mapClone.tiles[i],
+        cItemData = props.itemData.find(item => item.icon === mapClone.tiles[i].icon),   // Server data for item.
+        cItem = props.itemData.find(item => item.icon === mapClone.tiles[i].icon) || mapClone.tiles[i]  // for user or empty space
 
     // Validate action regardless of tile.
     if (!isAdjacent(i, pl, mapClone.size.width, 2)) {
       console.log("That's too far!")
       return false }
 
+    // Check for low-hanging fruit before even bothering with item lookup, etc.
+    // Actions which don't change w/ tool.
+    if (cTile.icon === null && cTile.action === null) {
+      mapClone = moveTo(i, mapClone, pl, pi)
+      tmpUD.mapStates[ud.currentMap] = mapClone
+      updateData(tmpUD)
+      return
+    } else if (cTile.action === 'inventory') {
+      toggleInventory(!showInventory)
+      return
+    }
+      
     // Toolable? jfc
     let cTool = ud.inventory[ud.equippedItem] ?? null
-    if (cTool                                           // If user has something equipped,
-        && "toolActions" in cItem                       // clicked item is 'toolable',
-        && cTool.icon in cItem.toolActions) {           // & clicked item can be modified by current tool
-      switch (cItem.toolActions[cTool.icon].action) {
+    if (cTool                                       // If user has something equipped,
+        && "toolActions" in cItemData               // clicked item is 'toolable',
+        && cTool.icon in cItemData.toolActions) {   // & clicked item can be modified by current tool
+      let cItemToolData = cItemData.toolActions[cTool.icon]
+      switch (cItemToolData.action) {
         case 'harvest':
-          let hi = cItem.toolActions[cTool.icon].harvestItems
+          let hi = cItemToolData.harvestItems
           // pass harvest function our drops and success callback
           await harvest(hi, (idx) => {
-            tmpUD.inventory.push(props.itemData.find(item => item.icon === hi[idx].item))
+            let harvestingItem = props.itemData.find(item => item.icon == hi[idx].item)
+            tmpUD.inventory.push(harvestingItem)
             console.log(`Used ${cTool.icon} to harvest ${hi[idx].item}`)
-            if (cItem.toolActions[cTool.icon].destroyOnHarvest) mapClone =  moveTo(null, mapClone, i, null)
+            if (cItemToolData.destroyOnHarvest) mapClone = moveTo(null, mapClone, i, null)
             else mapClone.tiles[i].harvestingDisabled = true
           })
+          tmpUD.mapStates[ud.currentMap] = mapClone
+          updateData(tmpUD)
+          return
           break
         default:
           break
       }
     } else {
       // Do non-tool action
-      switch (cItem.action) {
-        case null:
-          // Available to move
-          mapClone = moveTo(i, mapClone, pl, pi)
-          break;
-  
-        case 'inventory':
-          toggleInventory(!showInventory)
-          break
-  
+      switch (cItemData.action) {  
         case 'pickup':
-          console.log(`Picked up ${cItem.icon}`)
+          console.log(`Picked up ${cItemData.icon}`)
           tmpUD.inventory.push(cItemData)
           mapClone = moveTo(null, mapClone, i, null)
+          tmpUD.mapStates[ud.currentMap] = mapClone
+          updateData(tmpUD)
+          return
           break
           
         case 'harvest':
-          if (cItem.harvestingDisabled === true) {
+          if (cTile.harvestingDisabled) {
             console.log('Already harvested!')
             return false }
   
@@ -156,46 +169,31 @@ export default function PlayMap(props) {
           else await harvest(hi, (idx) => {
             mapClone.tiles[i].harvestingDisabled = true
             tmpUD.inventory.push(props.itemData.find(item => item.icon === hi[idx].item))
-            console.log(`Picked up ${hi[idx].item}`)
+            console.log(`Picked up ${tmpUD.inventory[tmpUD.inventory.length-1].icon}`)
           })
+          tmpUD.mapStates[ud.currentMap] = mapClone
+          updateData(tmpUD)
+          return
           break;
   
         case 'teleport':
+          // Force teleport requirements to 1 unit of adjacency.
           if (isAdjacent(i, pl, mapClone.size.width, 1)) {
             toggleFading(true)
-            await loadMap(cItem.teleportTo) }
+            await loadMap(mapClone.tiles[i].teleportTo) }
           else console.log("I can't reach the door handle from here!")
           return
           break
           
         default:
-          console.log(cItem)
+          // By default, attempt to read description off tile instance first.
+          if (cTile.description) console.log(`💭 ${cTile.description}`)
+          // Then try the item data.
+          else if (cItemData.description) console.log(`💭 ${cItemData.description}`)
           break
       }
     }
-    
-    
-    // Update user mapstate regardless of action
-    tmpUD.mapStates[ud.currentMap] = mapClone
-    props.setLocalUserData(tmpUD)
-    setUserData(props.user.uid, tmpUD)
   }
-
-  // Autosave hook.
-  // useEffect(() => {
-  //   const AUTOSAVE_INTERVAL = 1
-  //   const interval = setInterval(() => {
-  //     if (map) {
-  //       if (props.user && localUserData){
-  //         setUserData(props.user.uid, localUserData)
-  //         console.log('💾 Autosaved @ ', new Date())
-  //       } else console.log('autosave failed')
-  //     }
-  //   }, (AUTOSAVE_INTERVAL * 60000))
-
-  //   // Clear interval on unmount
-  //   return () => clearInterval(interval)
-  // }, [localUserData])
 
   return (
     <>

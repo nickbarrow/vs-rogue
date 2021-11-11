@@ -110,18 +110,7 @@ const harvest = async (harvestArray, successCallback) => {
     })
 }
 
-/**
- * Returns if user currently has a tool equipped as boolean.
- * @param {*} ud - User dataset to check against.
- */
-const toolEquipped = (ud) => {
-  if ('equippedItem' in ud
-      && ud.equippedItem !== null
-      && ud.inventory[ud.equippedItem].type === 'tool') return true
-  else return false
-}
-
 // RIP "toolable" function, Nov 10, 2021 - Nov 10, 2021
-// May this be a testament to my infinite stupidity.
+// May its memory be a testament to my infinite stupidity.
 
-export { generateCells, isAdjacent, moveTo, rollD, harvest, toolEquipped }
+export { generateCells, isAdjacent, moveTo, rollD, harvest }

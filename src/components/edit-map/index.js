@@ -2,34 +2,29 @@ import { useRef, useState } from 'react'
 import { getMap, saveMap } from '../../utils/firebase'
 import { generateCells } from '../../utils/utils'
 import { CL, Comment, FN, Var, Ctrl, Const, Tb, AFN } from '../code-text'
+import Item from '../../models/Item'
+import Map from '../../models/Map'
 
 export default function EditMap(props) {
   const [editingMap, setEditingMap] = useState(null)
   const mapInput = useRef(null),
         widthInput = useRef(null),
         heightInput = useRef(null)
-
+        
   // Returns a random integer in range range as a string. idk i think its funny
   var Meth = { random: range => { return `${Math.floor(Math.random()*range)}` } }
 
   const editMap = async () => {
     let inputVal = mapInput.current.value
-    if (inputVal) setEditingMap(await getMap(inputVal))
-    else setEditingMap({
-      title: 'map' + Meth.random(100),
-      size: {
-        width: 5,
-        height: 5
-      },
-      tiles: new Array(25).fill({})
-    })
+    // Load map from db as Map class.
+    if (inputVal) setEditingMap(new Map(await getMap(inputVal)))
+    else setEditingMap(new Map())
   }
 
   var handleCellClick = (i) => {
     let mapClone = { ...editingMap }, newVal
-      
     if (props.tool) {
-      let toolItem = props.itemData.find(item => item.icon === props.tool) || { icon: null, action: null }
+      let toolItem = new Item(props.itemData.find(item => item.icon === props.tool))
       switch (toolItem.action) {
         case 'teleport':
           let dest = prompt("Enter destination map:")
@@ -41,25 +36,25 @@ export default function EditMap(props) {
           if (!origin) return false
           else newVal = {...toolItem, ...{ origin: origin }}
           break
+        case 'message':
+          let msg = prompt("Enter a message:")
+          if (!msg) return false
+          else newVal = {...toolItem, ...{ description: msg }}
+          break
         case 'info':
           console.log(mapClone.tiles[i])
           return
           break
         case 'clear':
+          newVal = new Item()
+          break
         default:
           newVal = toolItem
           break
       }
-    } else newVal = { icon: null, action: null }
+    } else newVal = new Item()
     mapClone.tiles[i] = newVal
-    setEditingMap(mapClone)
-  }
-
-  const mapGrid = () => {
-    let map = editingMap
-    if (map?.size?.width && map?.size?.height && map?.tiles) {
-      return generateCells(null, map, handleCellClick, true)
-    }
+    setEditingMap(new Map(mapClone))
   }
 
   const updateMap = (newSize) => {
@@ -116,25 +111,28 @@ export default function EditMap(props) {
         <>
           <CL><Ctrl val="let" />{`emoji, title = '${editingMap?.title}'`}</CL>
           <CL>
-            <AFN name='setW' f={() => { updateMap({ width: parseInt(widthInput.current.value), height: editingMap.size.height })}}>
+            <AFN name='setW' f={() => {
+              setEditingMap(new Map(editingMap).updateSize({ width: parseInt(widthInput.current.value) }))
+              // updateMap({ width: parseInt(widthInput.current.value), height: editingMap.size.height })
+              }}>
               <Var name="w" />{'='}<input ref={widthInput} className='inline-input' placeholder={editingMap.size.width}></input>
             </AFN>
             <Comment val="TODO: with" />{'}'}
           </CL>
           <CL>
-            <AFN name='setH' f={() => { updateMap({ width: editingMap.size.width, height: parseInt(heightInput.current.value) })}}>
+            <AFN name='setH' f={() => {
+              setEditingMap(new Map(editingMap).updateSize({ height: parseInt(heightInput.current.value) }))
+              // updateMap({ width: editingMap.size.width, height: parseInt(heightInput.current.value) })
+              }}>
               <Var name="h" />{'='}<input ref={heightInput} className='inline-input' placeholder={editingMap.size.height}></input>
             </AFN>
             <Comment val="TODO: hite" />{'}'}
           </CL>
           <CL>
-            <AFN name='save' f={() => {saveMap(editingMap)}}>
+            <AFN name='save' f={() => {
+              editingMap instanceof Map ? editingMap.save() : alert('you fucked up buddy') }}>
               <Var name="name" />{'='}<input className='inline-input' placeholder={editingMap.title} style={{ width: '8ch'}} onChange={(e) => {
-                setEditingMap(old => {
-                  let clone = {...old}
-                  clone.title = e.target.value
-                  return clone
-                })
+                setEditingMap(new Map({...editingMap, title: e.target.value}))
               }}></input>
             </AFN>
             <Comment val="TODO: asve" />{'}'}
@@ -147,7 +145,7 @@ export default function EditMap(props) {
                 gridTemplateColumns: `repeat(${editingMap.size.width}, var(--line-height))`,
                 gridTemplateRows: `repeat(${editingMap.size.height}, var(--line-height))`
               }}>
-              {mapGrid()}
+              {generateCells(null, editingMap, handleCellClick, true)}
             </div>
           </CL>
 
