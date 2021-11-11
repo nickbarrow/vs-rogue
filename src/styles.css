@@ -374,7 +374,8 @@ img.emoji {
 .cell {
   width: 26px;
   height: 26px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -384,14 +385,13 @@ img.emoji {
   transition: all ease 0.3s;
 }
 .cell.accessible {
-  cursor: pointer;
-  border: 1px solid rgba(218, 165, 32, 0.3);
+  border: 2px solid rgba(218, 165, 32, 0.3);
 }
 .cell.accessible:hover {
   background-color: rgba(218, 165, 32, 0.15);
 }
 .cell.accessible:active {
-  background-color: rgba(218, 165, 32, 0.75);
+  background-color: rgba(167, 25, 25, 0.5);
 }
 .cell.harvesting-disabled span {
   cursor: default;

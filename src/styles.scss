@@ -383,7 +383,8 @@ img.emoji {
 .cell {
   width: $lineHeight;
   height: $lineHeight;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -393,11 +394,10 @@ img.emoji {
   transition: all ease .3s;
   
   &.accessible {
-    cursor: pointer;
-    border: 1px solid rgba(218, 165, 32, 0.3);
+    border: 2px solid rgba(218, 165, 32, 0.3);
     
     &:hover { background-color: rgba(218, 165, 32, 0.15); }
-    &:active { background-color: rgba(218, 165, 32, 0.75); }
+    &:active { background-color: rgba(167, 25, 25, 0.5); }
   }
 
   &.harvesting-disabled span {

@@ -121,8 +121,7 @@ const toolEquipped = (ud) => {
   else return false
 }
 
-const toolable = (item) => {
-  return (item.action !== null && item.action !== 'inventory' && !item.harvestingDisabled) ? true : false
-}
+// RIP "toolable" function, Nov 10, 2021 - Nov 10, 2021
+// May this be a testament to my infinite stupidity.
 
-export { generateCells, isAdjacent, moveTo, rollD, harvest, toolEquipped, toolable }
+export { generateCells, isAdjacent, moveTo, rollD, harvest, toolEquipped }

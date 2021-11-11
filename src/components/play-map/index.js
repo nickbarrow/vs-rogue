@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getMap, setUserData } from '../../utils/firebase'
 import { CL, Comment, AFN, FN, Var, Ctrl, Const, Tb } from '../code-text'
-import { generateCells, isAdjacent, moveTo, harvest, toolEquipped, toolable } from '../../utils/utils'
+import { generateCells, isAdjacent, moveTo, harvest, toolEquipped } from '../../utils/utils'
 
 export default function PlayMap(props) {
   // Manage user data locally so we only have to fetch on load, set whenever needed.
@@ -31,12 +31,22 @@ export default function PlayMap(props) {
       console.log('🗺️ Entering new area...')
       // Get fresh map from database.
       loadingMap = await getMap(mapName)
-      // Find player start location (1st map pin or teleport arrival).
-      startIdx = loadingMap.tiles.findIndex(tile => tile.icon === '📍') >= 0 ? loadingMap.tiles.findIndex(tile => tile.icon === '📍') : loadingMap.tiles.findIndex(tile => tile.icon === '🚩')
-      // Load arrivalPoints of each map 1st time loaded before arrival pt is
-      // overwritten with player.
+      // get arrival points on load because its like a million times easier this way for now shhh
       loadingMap.arrivalPoints = loadingMap.tiles.reduce((prev, curr, index) => {
-        if (curr.icon === '🚩') prev.push({...curr, index}); return prev }, [])
+        if (curr.icon === '🚩') {
+          prev.push({...curr, index})
+          // wipe icon and action so it is navigable
+          loadingMap.tiles[index].icon = null
+          loadingMap.tiles[index].action = null
+        }
+        return prev
+      }, [])
+
+      console.log(JSON.stringify(loadingMap.arrivalPoints, null, 2))
+
+      // Find player start location (1st map pin or teleport arrival).
+      startIdx = mapName === 'map001' ? loadingMap.tiles.findIndex(tile => tile.icon === '📍')
+        : loadingMap.arrivalPoints.findIndex(pt => pt.origin === ud.currentMap)
       // Move player icon to starting location
       loadingMap = await moveTo(startIdx, loadingMap, null, ud.icon)
       // Set user data
@@ -91,32 +101,35 @@ export default function PlayMap(props) {
         pi = ud.icon,
         pl = mapClone.tiles.findIndex(e => e.icon === pi || e.icon === '📍'),
         tmpUD = {...ud},
-        cItem = {...mapClone.tiles[i]},
-        cItemData = props.itemData.find(item => item.icon === cItem.icon)
+        // cItem = {...mapClone.tiles[i]},
+        cItem = props.itemData.find(item => item.icon === mapClone.tiles[i].icon) || mapClone.tiles[i]
 
     // Validate action regardless of tile.
     if (!isAdjacent(i, pl, mapClone.size.width, 2)) {
       console.log("That's too far!")
       return false }
 
-    // If we have a tool equipped, see if we can do anything
-    if (toolEquipped(ud) && toolable(cItem)) {
-      let cTool = ud.inventory[ud.equippedItem]
-      if (cItem.toolActions?.[cTool.icon])
-        switch (cItem.toolActions[cTool.icon].action) {
-          case 'harvest':
-            let hi = cItem.toolActions[cTool.icon].harvestItems
-            await harvest(cItem.toolActions[cTool.icon].harvestItems, (idx) => {
-              mapClone.tiles[i].harvestingDisabled = true
-              tmpUD.inventory.push(props.itemData.find(item => item.icon === hi[idx].item))
-              console.log(`Used ${cTool.icon} to harvest ${hi[idx].item}`)
-            })
-            break
-          default:
-            break
-        }
+    // Toolable? jfc
+    let cTool = ud.inventory[ud.equippedItem] ?? null
+    if (cTool                                           // If user has something equipped,
+        && "toolActions" in cItem                       // clicked item is 'toolable',
+        && cTool.icon in cItem.toolActions) {           // & clicked item can be modified by current tool
+      switch (cItem.toolActions[cTool.icon].action) {
+        case 'harvest':
+          let hi = cItem.toolActions[cTool.icon].harvestItems
+          // pass harvest function our drops and success callback
+          await harvest(hi, (idx) => {
+            tmpUD.inventory.push(props.itemData.find(item => item.icon === hi[idx].item))
+            console.log(`Used ${cTool.icon} to harvest ${hi[idx].item}`)
+            if (cItem.toolActions[cTool.icon].destroyOnHarvest) mapClone =  moveTo(null, mapClone, i, null)
+            else mapClone.tiles[i].harvestingDisabled = true
+          })
+          break
+        default:
+          break
+      }
     } else {
-
+      // Do non-tool action
       switch (cItem.action) {
         case null:
           // Available to move
@@ -141,9 +154,9 @@ export default function PlayMap(props) {
           let hi = cItem.harvestItems
           if (!hi) return false
           else await harvest(hi, (idx) => {
-            cItem.harvestingDisabled = true
+            mapClone.tiles[i].harvestingDisabled = true
             tmpUD.inventory.push(props.itemData.find(item => item.icon === hi[idx].item))
-            console.log(`Picked up ${cItem.harvestItems[idx].item}`)
+            console.log(`Picked up ${hi[idx].item}`)
           })
           break;
   
