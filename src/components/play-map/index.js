@@ -142,7 +142,6 @@ export default function PlayMap(props) {
           })
           tmpUD.mapStates[ud.currentMap] = mapClone
           updateData(tmpUD)
-          return
           break
         default:
           break
@@ -156,40 +155,40 @@ export default function PlayMap(props) {
           mapClone = moveTo(null, mapClone, i, null)
           tmpUD.mapStates[ud.currentMap] = mapClone
           updateData(tmpUD)
-          return
           break
           
-        case 'harvest':
-          if (cTile.harvestingDisabled) {
+        case 'harvest':  
+          if ('harvestingDisabled' in cTile && cTile.harvestingDisabled)
             console.log('Already harvested!')
-            return false }
-  
-          let hi = cItem.harvestItems
-          if (!hi) return false
-          else await harvest(hi, (idx) => {
-            mapClone.tiles[i].harvestingDisabled = true
-            tmpUD.inventory.push(props.itemData.find(item => item.icon === hi[idx].item))
-            console.log(`Picked up ${tmpUD.inventory[tmpUD.inventory.length-1].icon}`)
-          })
-          tmpUD.mapStates[ud.currentMap] = mapClone
-          updateData(tmpUD)
-          return
+          else {
+            let hi = cItem.harvestItems
+            if (!hi) return false
+            else await harvest(hi, (idx) => {
+              mapClone.tiles[i].harvestingDisabled = true
+              tmpUD.inventory.push(props.itemData.find(item => item.icon === hi[idx].item))
+              console.log(`Picked up ${tmpUD.inventory[tmpUD.inventory.length-1].icon}`)
+            })
+            tmpUD.mapStates[ud.currentMap] = mapClone
+            updateData(tmpUD)
+          } 
           break;
   
         case 'teleport':
           // Force teleport requirements to 1 unit of adjacency.
-          if (isAdjacent(i, pl, mapClone.size.width, 1)) {
+          if (!isAdjacent(i, pl, mapClone.size.width, 1))
+            console.log("I can't reach the door handle from here!")
+          else {
             toggleFading(true)
             await loadMap(mapClone.tiles[i].teleportTo) }
-          else console.log("I can't reach the door handle from here!")
-          return
+          break
+        
+        case 'message':
+          if (cTile.description) console.log(`💭 ${cTile.description}`)
           break
           
         default:
-          // By default, attempt to read description off tile instance first.
-          if (cTile.description) console.log(`💭 ${cTile.description}`)
-          // Then try the item data.
-          else if (cItemData.description) console.log(`💭 ${cItemData.description}`)
+          // Log item description if no valid action.
+          if (cItemData.description) console.log(`💭 ${cItemData.description}`)
           break
       }
     }

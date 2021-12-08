@@ -6,6 +6,8 @@ import TitleBar from './components/title-bar'
 import Tabs from './components/tabs'
 import './styles.css'
 
+import PlayGrid from './components/PlayGrid'
+
 export default function App() {
   const [user, setUser] = useState(null)
   const [itemData, setItemData] = useState(null)
@@ -37,28 +39,31 @@ export default function App() {
   }, [user, localUserData])
   
   return (
-    <div className='App'>
-      <TitleBar user={user} setUser={setUser} />
-      <Tabs />
+    // <div className='App'>
+    //   <TitleBar user={user} setUser={setUser} />
+    //   <Tabs />
       
-      <Editor
-        user={user}
-        itemData={itemData}
-        localUserData={localUserData}
-        setLocalUserData={setLocalUserData}
-        tool={tool}
-        />
+    //   <Editor
+    //     user={user}
+    //     itemData={itemData}
+    //     localUserData={localUserData}
+    //     setLocalUserData={setLocalUserData}
+    //     tool={tool}
+    //     />
 
-      <div className='console'>
-        <div className='console-toolbar'>
-          <div className='console-tab'>Terminal</div>
-          <div className='console-tab'>Problems</div>
-        </div>
-        <div className='logs'>
-          {logs.map((log, idx) => <pre className='log' key={idx}>{log}</pre>)}
-        </div>
-      </div>
-      <StatusBar tool={tool} setTool={setTool} />
+    //   <div className='console'>
+    //     <div className='console-toolbar'>
+    //       <div className='console-tab'>Terminal</div>
+    //       <div className='console-tab'>Problems</div>
+    //     </div>
+    //     <div className='logs'>
+    //       {logs.map((log, idx) => <pre className='log' key={idx}>{log}</pre>)}
+    //     </div>
+    //   </div>
+    //   <StatusBar tool={tool} setTool={setTool} />
+    // </div>
+    <div className='App'>
+      <PlayGrid user={user} setUser={setUser} />
     </div>
   );
 }
