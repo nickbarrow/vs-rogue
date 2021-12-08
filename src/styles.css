@@ -526,10 +526,19 @@ img.emoji {
 }
 
 .btn {
-  color: white;
+  color: rgba(255, 255, 255, 0.75);
   background-color: #23272E;
-  border: 1px solid white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 7px;
   padding: 0.3rem 0.8rem;
   font: 18px sans-serif;
+  cursor: pointer;
+  transition: all ease 0.3s;
+  box-shadow: inset 0 0 2px 5px rgba(255, 255, 255, 0.01);
+}
+.btn:hover {
+  background-color: #2a2f36;
+}
+.btn:active {
+  background-color: #383f47;
 }
