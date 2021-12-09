@@ -39,6 +39,10 @@ export default function App() {
   }, [user, localUserData])
   
   return (
+    <div className='App'>
+      <PlayGrid user={user} setUser={setUser} />
+    </div>
+    
     // <div className='App'>
     //   <TitleBar user={user} setUser={setUser} />
     //   <Tabs />
@@ -62,8 +66,5 @@ export default function App() {
     //   </div>
     //   <StatusBar tool={tool} setTool={setTool} />
     // </div>
-    <div className='App'>
-      <PlayGrid user={user} setUser={setUser} />
-    </div>
   );
 }
