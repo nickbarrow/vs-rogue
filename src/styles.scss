@@ -7,7 +7,7 @@
 $fontSize: 18px;
 $fontFamily: 'Ubuntu Mono';
 $lineHeight: 26px;
-$bg: rgb(35, 39, 46);
+$bg: rgb(23, 26, 31);
 $bgLight: rgb(50, 55, 65);
 $titleBarHeight: 35px;
 $tabBarHeight: 45px;
@@ -383,23 +383,34 @@ img.emoji {
 
 /* --- CELLS --- */
 .cell {
-  width: $lineHeight;
-  height: $lineHeight;
+  // width: $lineHeight;
+  // height: $lineHeight;
+  height: 100%;
   border: 2px solid rgba(255, 255, 255, 0.08);
-  border-radius: 2px;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: $fontSize;
+  font-size: x-large;
   position: relative;
   background-color: transparent;
-  transition: all ease .3s;
+  user-select: none;
+  transition: border ease .3s, background-color ease .3s;
+
+  span { filter: grayscale(100%); }
   
   &.accessible {
-    border: 2px solid rgba(218, 165, 32, 0.3);
+    border-color: rgba(218, 165, 32, 0.2);
+    cursor: pointer;
     
-    &:hover { background-color: rgba(218, 165, 32, 0.15); }
-    &:active { background-color: rgba(167, 25, 25, 0.5); }
+    &:hover {
+      background-color: rgba(218, 165, 32, 0.05);
+      border-color: rgba(218, 165, 32, 0.3);
+    }
+    &:active {
+      border-color: rgba(167, 25, 25, 0.4);
+      background-color: rgba(167, 25, 25, 0.1);
+    }
   }
 
   &.harvesting-disabled span {
@@ -408,7 +419,10 @@ img.emoji {
     opacity: .8;
   }
 
-  &:hover { background-color: rgba(255, 255, 255, 0.2); }
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.01);
+  }
   
   
   &.equipped {
@@ -555,6 +569,15 @@ img.emoji {
       }
     }
   }
+}
+
+
+/* LETS JUST START OVER HUH */
+
+.play-grid {
+  display: grid;
+  width: 100%;
+  height: 100%;
 }
 
 .btn {

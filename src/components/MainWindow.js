@@ -3,9 +3,12 @@ import { auth } from '../utils/firebase'
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth'
 import styled, { css } from 'styled-components'
 
-const PlayContainer = styled.div`
-  height: 80%;
-  width: 75%;
+import PlayGrid from './PlayGrid.jsx'
+
+const MainContainer = styled.div`
+  // height: 90%;
+  width: 90%;
+  padding: 2vw;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -15,9 +18,15 @@ const PlayContainer = styled.div`
   border-radius: 10px;
   box-shadow: 0 0 12px 5px #00000069;
   background-color: #0000001c;
+  transition: all ease .5s;
+  
+  @media (min-width: 600px) {
+    width: 80%;
+    // height: 75%;
+  }
 `;
 
-export default function PlayGrid (props) {
+export default function MainWindow (props) {
     const provider = new GoogleAuthProvider()
     const [showBoard, toggleBoard] = useState(false)
   
@@ -30,13 +39,13 @@ export default function PlayGrid (props) {
     }, [])
 
     return (
-        <PlayContainer>
+        <MainContainer>
           {!props.user ? (
             <button className='btn' onClick={() => { signInWithPopup(auth, provider) }}>Sign In</button>
           ) : (
             <>
               {showBoard ? (
-                <p>Test</p>
+                <PlayGrid {...props} />
               ) : (
                 <>
                   <button className='btn green lg' onClick={() => { toggleBoard(true) }}>Start</button>
@@ -45,6 +54,6 @@ export default function PlayGrid (props) {
               )}
             </>
           )}
-        </PlayContainer>
+        </MainContainer>
     )
 }

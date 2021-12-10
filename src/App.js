@@ -6,7 +6,7 @@ import TitleBar from './components/title-bar'
 import Tabs from './components/tabs'
 import './styles.css'
 
-import PlayGrid from './components/PlayGrid'
+import MainWindow from './components/MainWindow'
 
 export default function App() {
   const [user, setUser] = useState(null)
@@ -40,9 +40,14 @@ export default function App() {
   
   return (
     <div className='App'>
-      <PlayGrid user={user} setUser={setUser} />
+      <MainWindow
+        user={user} setUser={setUser}
+        localUD={localUserData} setLocalUD={setLocalUserData}
+        itemData={itemData}
+        tool={tool}
+        />
     </div>
-    
+
     // <div className='App'>
     //   <TitleBar user={user} setUser={setUser} />
     //   <Tabs />
