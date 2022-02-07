@@ -1,19 +1,20 @@
 import { useEffect, useState } from 'react'
-import Editor from './components/editor'
-import StatusBar from './components/status-bar'
 import { getItems, getUserData } from './utils/firebase'
-import TitleBar from './components/title-bar'
-import Tabs from './components/tabs'
-import './styles.css'
+
+// import Editor from './components/editor'
+// import StatusBar from './components/status-bar'
+// import TitleBar from './components/title-bar'
+// import Tabs from './components/tabs'
 
 import MainWindow from './components/MainWindow'
+import './styles.scss'
 
 export default function App() {
   const [user, setUser] = useState(null)
   const [itemData, setItemData] = useState(null)
   const [localUserData, setLocalUserData] = useState(null)
   const [tool, setTool] = useState(null)
-  const [logs, setLogs] = useState([])
+  // const [logs, setLogs] = useState([])
 
   useEffect(() => {
     // Load item data
@@ -21,6 +22,7 @@ export default function App() {
       setItemData(await getItems())
     })()
 
+    /*
     // Create console.log function to intercept console logs.
     let oldCL = window.console.log
     window.console.log = function (message) {
@@ -28,14 +30,17 @@ export default function App() {
       setLogs((currLogs) => [log, ...currLogs])
       oldCL(log)
     }
+    */
   }, [])
 
-  // Load user data into local state when user logs in.
+  // Load user data into local state when user changes.
   useEffect(() => {
     (async function () {
+      // App loaded, user logged in, no local user data (either not loaded or null).
       if (user && (!localUserData || Object.keys(localUserData).length === 0))
         setLocalUserData(await getUserData(user.uid))
     })()
+    // Im assuming localUserData is a dep in case we want to wipe while playing
   }, [user, localUserData])
   
   return (

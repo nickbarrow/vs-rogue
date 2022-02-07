@@ -1,23 +1,26 @@
-import { initializeApp } from "firebase/app"
+import { initializeApp } from 'firebase/app'
 import { getFirestore, doc, setDoc, getDoc, getDocs, collection } from 'firebase/firestore'
-import { getAuth } from "firebase/auth";
+import { getAuth } from 'firebase/auth'
+
 import Item from '../models/Item'
 import Map from '../models/Map'
 
+// Firebase app config.
 const firebaseConfig = {
-  apiKey: "AIzaSyAOYfLpH4NWjjC1WiOTsFlIWnCgvlDrRbc",
-  authDomain: "vs-rogue.firebaseapp.com",
-  projectId: "vs-rogue",
-  storageBucket: "vs-rogue.appspot.com",
-  messagingSenderId: "516834065773",
-  appId: "1:516834065773:web:099c0204abdbceead32e64"
-};
+  apiKey: 'AIzaSyAOYfLpH4NWjjC1WiOTsFlIWnCgvlDrRbc',
+  authDomain: 'vs-rogue.firebaseapp.com',
+  projectId: 'vs-rogue',
+  storageBucket: 'vs-rogue.appspot.com',
+  messagingSenderId: '516834065773',
+  appId: '1:516834065773:web:099c0204abdbceead32e64'
+}
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const firestore = getFirestore(app);
+const app = initializeApp(firebaseConfig)
+const auth = getAuth(app)
+const firestore = getFirestore(app)
 
+// Get a map from Firestore by name, or null if name doesn't exist in DB.
 const getMap = async (mapName) => {
   const mapSnap = await getDoc(doc(firestore, 'maps', mapName))
   if (mapSnap.exists()) {
@@ -33,11 +36,19 @@ const normalizeMap = map => {
   return m
 }
 
-// Save a map to firestore.
+/**
+ * Save a map to firestore.
+ * @param {*} map - Map class.
+ */
 const saveMap = async (map) => {
   await setDoc(doc(firestore, 'maps', map.title), map)
 }
 
+
+/**
+ * Load all item data (or optionally 1 item) from Firestore. 
+ * @param {*} item - Item title.
+ */
 const getItems = async (item) => {
   if (item) {
     // Optionally load just 1 item
@@ -56,8 +67,13 @@ const getItems = async (item) => {
   }
 }
 
+/**
+ * Load user data from Firestore, or create new.
+ * @param {*} uid - User UID
+ */
 const getUserData = async (uid) => {
   const userDataSnap = await getDoc(doc(firestore, 'userData', uid))
+  
   if (userDataSnap.exists() && Object.keys(userDataSnap.data()).length !== 0) {
     console.log('💾 User data found.')
     return userDataSnap.data()

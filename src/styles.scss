@@ -397,7 +397,7 @@ img.emoji {
   user-select: none;
   transition: border ease .3s, background-color ease .3s;
 
-  span { filter: grayscale(100%); }
+  // span { filter: grayscale(100%); }
   
   &.accessible {
     border-color: rgba(218, 165, 32, 0.2);

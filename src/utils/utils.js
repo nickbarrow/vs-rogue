@@ -111,6 +111,6 @@ const harvest = async (harvestArray, successCallback) => {
 }
 
 // RIP "toolable" function, Nov 10, 2021 - Nov 10, 2021
-// May its memory be a testament to my infinite stupidity.
+// May it's memory be a testament to my infinite stupidity.
 
 export { generateCells, isAdjacent, moveTo, rollD, harvest }
