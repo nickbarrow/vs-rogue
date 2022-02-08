@@ -10,7 +10,7 @@ export default function PlayGrid (props) {
 
   var containerRef = useRef(null)
   const containerWidth = useContainerWidth()
-  const [cellWidth, setCellWidth] = useState(0)
+  const [cellWidth, setCellWidth] = useState('40')
   
   // Load a new map.
   const loadMap = async (mapName) => {
@@ -174,7 +174,6 @@ export default function PlayGrid (props) {
                   isEditingGrid ? map.tiles[index].icon
                   // If playing and player location, draw player icon
                   : index === pl ? pi 
-                  
                     : map.tiles[index].icon === '🚩' ? ''
                       : map.tiles[index].icon
                 }
@@ -206,7 +205,7 @@ export default function PlayGrid (props) {
   useEffect(() => {
     if (containerWidth && ud?.mapStates[ud.currentMap]) {
       console.log(containerWidth)
-      let w = parseInt(ud.mapStates[ud.currentMap].size.width),
+      let w = parseInt(ud.mapStates[ud.currentMap].size.width, 10),
           cellW = containerWidth/(w+1);
       setCellWidth(cellW)
     }
@@ -220,6 +219,10 @@ export default function PlayGrid (props) {
     //   setCellWidth(cellW)
     // }
   }, [containerWidth])
+
+  let rowGap = '10px', columnGap = '10px'
+  // (100/(parseInt(ud.mapStates[ud.currentMap].size.height)+1))/(ud.mapStates[ud.currentMap].size.height - 1) %
+  // (100/(parseInt(ud.mapStates[ud.currentMap].size.width)+1))/(ud.mapStates[ud.currentMap].size.width - 1) %
   
   return (
     <div
@@ -227,10 +230,10 @@ export default function PlayGrid (props) {
       ref={containerRef}
       style={ 
         ud?.mapStates[ud.currentMap] ? {
-          rowGap: `${(100/(parseInt(ud.mapStates[ud.currentMap].size.height)+1))/(ud.mapStates[ud.currentMap].size.height - 1)}%`,
-          columnGap: `${(100/(parseInt(ud.mapStates[ud.currentMap].size.width)+1))/(ud.mapStates[ud.currentMap].size.width - 1)}%`,
+          rowGap,
+          columnGap,
           gridTemplateColumns: `repeat(${ud.mapStates[ud.currentMap].size.width}, ${cellWidth}px`,
-          gridTemplateRows: `repeat(${ud.mapStates[ud.currentMap].size.width}, ${cellWidth}px)`
+          gridTemplateRows: `repeat(${ud.mapStates[ud.currentMap].size.height}, ${cellWidth}px)`
         } : null }
       >
       {ud ? generateCells(ud.icon, ud.mapStates[ud.currentMap], handleCellClick) : null}

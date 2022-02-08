@@ -6,6 +6,8 @@ import { getItems, getUserData } from './utils/firebase'
 // import TitleBar from './components/title-bar'
 // import Tabs from './components/tabs'
 
+import UserDataContext from './UserDataContext'
+
 import MainWindow from './components/MainWindow'
 import './styles.scss'
 
@@ -45,12 +47,14 @@ export default function App() {
   
   return (
     <div className='App'>
-      <MainWindow
-        user={user} setUser={setUser}
-        localUD={localUserData} setLocalUD={setLocalUserData}
-        itemData={itemData}
-        tool={tool}
-        />
+      <UserDataContext.Provider value={{ data: localUserData, setData: setLocalUserData }}>
+        <MainWindow
+          user={user} setUser={setUser}
+          localUD={localUserData} setLocalUD={setLocalUserData}
+          itemData={itemData}
+          tool={tool}
+          />
+      </UserDataContext.Provider>
     </div>
 
     // <div className='App'>

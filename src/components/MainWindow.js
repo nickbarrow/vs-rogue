@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { auth } from '../utils/firebase'
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth'
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 
 import PlayGrid from './PlayGrid.jsx'
 
+import UserDataContext from '../UserDataContext'
+
 const MainContainer = styled.div`
-  // height: 90%;
-  width: 90%;
+  width: fit-content;
   padding: 2vw;
   display: flex;
   flex-direction: column;
@@ -19,16 +20,14 @@ const MainContainer = styled.div`
   box-shadow: 0 0 12px 5px #00000069;
   background-color: #0000001c;
   transition: all ease .5s;
-  
-  @media (min-width: 600px) {
-    width: 80%;
-    // height: 75%;
-  }
 `;
 
 export default function MainWindow (props) {
     const provider = new GoogleAuthProvider()
     const [showBoard, toggleBoard] = useState(false)
+
+    const { data, setData } = useContext(UserDataContext)
+    console.log('ud: ', data)
   
     // Define onAuthStateChanged on mount.
     useEffect(() => {
@@ -39,21 +38,21 @@ export default function MainWindow (props) {
     }, [])
 
     return (
-        <MainContainer>
-          {!props.user ? (
-            <button className='btn' onClick={() => { signInWithPopup(auth, provider) }}>Sign In</button>
-          ) : (
-            <>
-              {showBoard ? (
-                <PlayGrid {...props} />
-              ) : (
-                <>
-                  <button className='btn green lg' onClick={() => { toggleBoard(true) }}>Start</button>
-                  <button className='btn' onClick={() => { signOut(auth) }}>Sign Out</button>
-                </>
-              )}
-            </>
-          )}
-        </MainContainer>
+      <MainContainer>
+        {!props.user ? (
+          <button className='btn' onClick={() => { signInWithPopup(auth, provider) }}>Sign In</button>
+        ) : (
+          <>
+            {showBoard ? (
+              <PlayGrid {...props} />
+            ) : (
+              <>
+                <button className='btn green lg' onClick={() => { toggleBoard(true) }}>Start</button>
+                <button className='btn' onClick={() => { signOut(auth) }}>Sign Out</button>
+              </>
+            )}
+          </>
+        )}
+      </MainContainer>
     )
 }
